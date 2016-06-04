@@ -1,0 +1,12 @@
+{
+  "name": "@xmpp/client-tcp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "Sonny Piers <sonny@fastmail.net>",
+  "license": "ISC",
+  "dependencies": {
+    "inherits": "^2.0.1",
+    "ltx": "^2.3.0"
+  }
+}

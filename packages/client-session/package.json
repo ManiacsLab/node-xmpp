@@ -1,0 +1,11 @@
+{
+  "name": "@xmpp/client-session",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "Sonny Piers <sonny@fastmail.net>",
+  "license": "ISC",
+  "dependencies": {
+    "ltx": "^2.3.0"
+  }
+}

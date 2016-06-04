@@ -1,0 +1,10 @@
+{
+  "name": "@xmpp/client-connection",
+  "version": "1.0.0",
+  "description": "",
+  "author": "Sonny Piers <sonny@fastmail.net>",
+  "license": "ISC",
+  "dependencies": {
+    "inherits": "^2.0.1"
+  }
+}

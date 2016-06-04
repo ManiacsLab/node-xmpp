@@ -6,4 +6,6 @@ coverage/
 !.npmignore
 !.travis.yml
 
+npm-debug.log*
+lerna-debug.log*
 bundle.js

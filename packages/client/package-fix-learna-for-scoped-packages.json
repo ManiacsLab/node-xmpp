@@ -1,0 +1,19 @@
+{
+  "name": "@xmpp/client",
+  "version": "0.0.0",
+  "description": "XMPP client for Javascript",
+  "license": "ISC",
+  "dependencies": {
+    "@xmpp/client-authentication": "^0.0.0",
+    "@xmpp/client-bind": "^0.0.0",
+    "@xmpp/client-connection": "^0.0.0",
+    "@xmpp/client-iq-callee": "^0.0.0",
+    "@xmpp/client-iq-caller": "^0.0.0",
+    "@xmpp/client-sasl": "^0.0.0",
+    "@xmpp/client-sasl-digest-md5": "^0.0.0",
+    "@xmpp/client-sasl-plain": "^0.0.0",
+    "@xmpp/client-sasl-scram-sha-1": "^0.0.0",
+    "@xmpp/client-client-tcp": "^0.0.0",
+    "@xmpp/client-client-websocket": "^0.0.0"
+  }
+}

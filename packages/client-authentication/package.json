@@ -1,0 +1,11 @@
+{
+  "name": "@xmpp/client-authentication",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "Sonny Piers <sonny@fastmail.net>",
+  "license": "ISC",
+  "dependencies": {
+    "debug": "^2.2.0"
+  }
+}
