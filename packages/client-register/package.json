@@ -1,11 +1,11 @@
 {
   "name": "@xmpp/client-register",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "author": "Sonny Piers <sonny@fastmail.net>",
+  "repository": "github:node-xmpp/node-xmpp",
+  "homepage": "http://github.com/node-xmpp/node-xmpp",
+  "bugs": "http://github.com/node-xmpp/node-xmpp/issues",
+  "version": "0.0.0",
   "license": "ISC",
   "dependencies": {
-    "ltx": "^2.3.0"
+    "ltx": "^2.4.0"
   }
 }

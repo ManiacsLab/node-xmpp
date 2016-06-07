@@ -1,7 +1,9 @@
 {
   "name": "@xmpp/client",
+  "repository": "github:node-xmpp/node-xmpp",
+  "homepage": "http://github.com/node-xmpp/node-xmpp",
+  "bugs": "http://github.com/node-xmpp/node-xmpp/issues",
   "version": "0.0.0",
-  "description": "XMPP client for Javascript",
   "license": "ISC",
   "dependencies": {
     "@xmpp/client-authentication": "^0.0.0",
@@ -13,7 +15,7 @@
     "@xmpp/client-sasl-digest-md5": "^0.0.0",
     "@xmpp/client-sasl-plain": "^0.0.0",
     "@xmpp/client-sasl-scram-sha-1": "^0.0.0",
-    "@xmpp/client-client-tcp": "^0.0.0",
-    "@xmpp/client-client-websocket": "^0.0.0"
+    "@xmpp/client-tcp": "^0.0.0",
+    "@xmpp/client-websocket": "^0.0.0"
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@xmpp/client-sasl-scam-sha-1",
+  "name": "@xmpp/client-sasl-scram-sha-1",
   "repository": "github:node-xmpp/node-xmpp",
   "homepage": "http://github.com/node-xmpp/node-xmpp",
   "bugs": "http://github.com/node-xmpp/node-xmpp/issues",

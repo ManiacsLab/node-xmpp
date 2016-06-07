@@ -136,8 +136,8 @@ WebSocket.prototype.send = function (data) {
   this.socket.send(data)
 }
 
-WebSocket.match = function ({uri = ''}) {
-  return uri.startsWith('ws://') || uri.startsWith('wss://') ? uri : false
+WebSocket.match = function (uri) {
+  return typeof uri === 'string' && uri.match(/^wss?:\/\//) ? uri : null
 }
 
 WebSocket.NS_FRAMING = NS_FRAMING

@@ -27,7 +27,7 @@ client.once('close', () => {
  */
 // emitted when stream features are received
 client.once('stream:features', (element) => {
-  console.log('features')
+  // console.log('features')
   // console.log('features', element.toString())
 })
 // emitted when stream is open
@@ -53,33 +53,42 @@ client.use(require('./client-iq-caller'))
 // client.use(require('./client-tcp'))
 client.use(require('./client-websocket'))
 client.use(require('./client-authentication'))
-// client.use(require('./client-legacy-authentication'))
+client.use(require('./client-legacy-authentication'))
 client.use(require('./client-sasl'))
 client.use(require('./client-sasl-scram-sha-1'))
-// client.use(require('./client-sasl-plain'))
+client.use(require('./client-sasl-plain'))
 client.use(require('./client-bind'))
 client.use(require('./client-stream-management')) // SM
 
-client.connect('ws://localhost:5280/xmpp-websocket')
+// client.connect('ws://localhost:5280/xmpp-websocket')
 
 let first = false
 
-client.on('connect', (features) => {
-  client.authenticate({'username': 'sonny', 'password': 'foobar'}, function (err) {
+client.connect('ws://localhost:5280/xmpp-websocket', function (err) {
+  if (err) return console.error(err)
+
+  client.open(function (err, features) {
     if (err) return console.error(err)
-    client.bind((err, jid) => {
+
+    client.authenticate({'username': 'sonny', 'password': 'foobar'}, function (err) {
       if (err) return console.error(err)
 
-      // client.enableSM((err) => {
-        // if (err) return console.error(err)
-        // console.log('SM enabled!!!!')
+      client.bind((err, jid) => {
+        if (err) return console.error(err)
 
-      if (!first) {
-        // client.transport.socket.close()
-        first = true
-      }
-      // })
-      // READ
+        console.log(jid)
+
+        // client.enableSM((err) => {
+          // if (err) return console.error(err)
+          // console.log('SM enabled!!!!')
+
+        if (!first) {
+          // client.transport.socket.close()
+          first = true
+        }
+        // })
+        // READ
+      })
     })
   })
 })

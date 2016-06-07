@@ -44,8 +44,6 @@ function authenticate (client, credentials, features, cb) {
     serviceName: domain
   }, credentials)
 
-  console.log(creds)
-
   if (debug.enabled) {
     const {password} = creds
     creds.password = '******'

@@ -1,11 +1,11 @@
 {
-  "name": "@xmpp/client-state-indication",
+  "name": "@xmpp/jid",
   "repository": "github:node-xmpp/node-xmpp",
   "homepage": "http://github.com/node-xmpp/node-xmpp",
   "bugs": "http://github.com/node-xmpp/node-xmpp/issues",
   "version": "0.0.0",
   "license": "ISC",
   "dependencies": {
-    "ltx": "^2.4.0"
+    "node-xmpp-jid": "^2.3.0"
   }
 }

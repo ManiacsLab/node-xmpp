@@ -7,7 +7,7 @@ function request (stanza, options, cb = () => {}) {
   }
 
   stanza = stanza.root()
-  if (!stanza.attrs.id) stanza.attrs.id = Math.random().toString().split('0.')[1]
+  if (!stanza.attrs.id) this.id()
 
   // TODO
   if (options.next === true) this._iqNext = true

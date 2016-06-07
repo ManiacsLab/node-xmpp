@@ -23,12 +23,12 @@ function bind (resource, cb) {
       <bind xmlns="${NS}"/>
     </iq>
   `
-
-  if (resource) iq.getChild('bind').c('resource').t(resource)
+  if (resource) iq.getChild('bind').cnode(ltx`<resource>${resource}</resource>`)
 
   return this.request(iq, {next: true}, (err, res) => {
     if (err) return cb(err)
     cb(null, res.getChild('jid').text())
+    this.emit('online')
   })
 }
 

@@ -12,36 +12,22 @@ function Client (options) {
   this.plugins = []
   this.transports = []
   this.transport = null
+  this.jid = null
+  this.uri = ''
+  this._domain = ''
   this.options = typeof options === 'object' ? options : {}
-  this.hooks = new Map()
 }
+
+inherits(Client, EventEmitter)
 
 Client.prototype.id = function () {
   return Math.random().toString().split('0.')[1]
 }
 
-Client.prototype.connect = function (options, cb = () => {}) {
-  if (typeof options === 'function') {
-    cb = options
-    options = {}
-  } else if (typeof options === 'string') {
-    options = {uri: options}
-  }
-
-  if (options.uri) this.uri = options.uri
-
-  // we can't use domain property because EventEmitter uses it
-  if (options.domain) {
-    this._domain = options.domain
-  } else if (this.uri) {
-    this._domain = parse(options.uri).hostname
-  }
-
-  if (options.uri) this.uri = options.uri
-
+Client.prototype.connect = function (uri, cb = () => {}) {
   let params
   const Transport = this.transports.find(Transport => {
-    return params = Transport.match(this) // eslint-disable-line no-return-assign
+    return params = Transport.match(uri) // eslint-disable-line no-return-assign
   })
 
   // FIXME callback?
@@ -55,16 +41,30 @@ Client.prototype.connect = function (options, cb = () => {}) {
   })
   transport.on('element', (element) => this._onelement(element))
 
-  // FIXME merge connect and open?
-  // remove stream features event from transport?
-  transport.connect(params, (err) => {
+  transport.connect(params, (err, ...args) => {
     if (err) return cb(err)
-    transport.open(this._domain, (err, features) => {
-      if (err) return cb(err)
-      this.features = features
-      this.emit('connect', features)
-      cb(null, features)
-    })
+    this.uri = uri
+    cb()
+  })
+}
+
+Client.prototype.open = function (params, cb = () => {}) {
+  if (typeof params === 'string') {
+    params = {domain: params}
+  } else if (typeof params === 'function') {
+    cb = params
+    params = {}
+  }
+
+  const domain = params.domain || parse(this.uri).hostname
+
+  this.transport.open(domain, (err, features) => {
+    if (err) return cb(err)
+    // we can't use domain property because EventEmitter uses it
+    this._domain = domain
+    this.features = features
+    this.emit('open', features)
+    cb(null, features)
   })
 }
 
@@ -79,14 +79,6 @@ Client.prototype._restart = function (cb) {
     cb()
   })
 }
-
-// merge with send? add timeout? FIXME
-// Client.prototype.request = function (stanza, cb) {
-//   stanza = stanza.root()
-//   const id = stanza.attrs.id || (stanza.attrs.id = Math.random().toString())
-//   this.iqHandlers[id] = cb
-//   this.send(stanza)
-// }
 
 Client.prototype._onelement = function (element) {
   debug('<-', element.toString())
@@ -125,7 +117,5 @@ Client.prototype.use = function (plugin) {
   this.plugins.push(plugin)
   plugin(this)
 }
-
-inherits(Client, EventEmitter)
 
 module.exports = Client
