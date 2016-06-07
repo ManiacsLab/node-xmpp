@@ -7,6 +7,7 @@
   "license": "ISC",
   "dependencies": {
     "debug": "^2.2.0",
+    "@xmpp/jid": "^0.0.0",
     "@xmpp/xml": "^0.0.0"
   }
 }

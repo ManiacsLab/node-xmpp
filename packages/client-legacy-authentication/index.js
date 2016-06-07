@@ -22,6 +22,7 @@ function bind (resource, cb) {
   setTimeout(() => {
     const jid = this._legacy_authentication_jid
     delete this._legacy_authentication_jid
+    this.jid = jid
     cb(null, jid)
   })
 }

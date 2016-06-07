@@ -1,6 +1,6 @@
 'use strict'
 
-const ltx = require('ltx')
+const xml = require('@xmpp/xml')
 
 const NS_STANZA = 'urn:ietf:params:xml:ns:xmpp-stanzas'
 
@@ -11,13 +11,14 @@ function addRequestHandler (match, handle) {
 function handler (stanza) {
   if (
     !stanza.is('iq') ||
-    stanza.attrs.id === 'error' ||
-    stanza.attrs.id === 'result'
+    !stanza.attrs.id ||
+    stanza.attrs.type === 'error' ||
+    stanza.attrs.type === 'result'
   ) return
 
   let matched
 
-  const iq = ltx`
+  const iq = xml`
     <iq id="${stanza.attrs.id}"/>
   `
 
@@ -28,13 +29,13 @@ function handler (stanza) {
     handler(matching, (err, res) => {
       if (err) {
         stanza.attrs.type = 'error'
-        if (ltx.isElement()) {
+        if (xml.isElement()) {
           iq.cnode(err)
         }
         // else // FIXME
       } else {
         stanza.attrs.type = 'result'
-        if (res instanceof ltx.Element) {
+        if (xml.isElement(res)) {
           iq.cnode(res)
         }
       }

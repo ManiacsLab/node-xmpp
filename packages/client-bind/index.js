@@ -1,7 +1,8 @@
 'use strict'
 
 const debug = require('debug')('xmpp:client:bind')
-const ltx = require('ltx')
+const xml = require('@xmpp/xml')
+const JID = require('@xmpp/jid')
 
 /*
  * https://xmpp.org/rfcs/rfc6120.html#bind
@@ -18,16 +19,18 @@ function bind (resource, cb) {
   if (resource) debug(`binding resource "${resource}"`)
   else debug('binding server resource')
 
-  const iq = ltx`
+  const iq = xml`
     <iq type='set'>
       <bind xmlns="${NS}"/>
     </iq>
   `
-  if (resource) iq.getChild('bind').cnode(ltx`<resource>${resource}</resource>`)
+  if (resource) iq.getChild('bind').cnode(xml`<resource>${resource}</resource>`)
 
   return this.request(iq, {next: true}, (err, res) => {
     if (err) return cb(err)
-    cb(null, res.getChild('jid').text())
+    const jid = new JID(res.getChild('jid').text())
+    this.jid = jid
+    cb(null, jid)
     this.emit('online')
   })
 }

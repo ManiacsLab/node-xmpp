@@ -9,16 +9,23 @@
     "@xmpp/client-authentication": "^0.0.0",
     "@xmpp/client-bind": "^0.0.0",
     "@xmpp/client-connection": "^0.0.0",
+    "@xmpp/client-bosh": "^0.0.0",
     "@xmpp/client-iq-callee": "^0.0.0",
     "@xmpp/client-iq-caller": "^0.0.0",
+    "@xmpp/client-legacy-authentication": "^0.0.0",
     "@xmpp/client-sasl": "^0.0.0",
+    "@xmpp/client-sasl-anonymous": "^0.0.0",
     "@xmpp/client-sasl-digest-md5": "^0.0.0",
     "@xmpp/client-sasl-plain": "^0.0.0",
     "@xmpp/client-sasl-scram-sha-1": "^0.0.0",
+    "@xmpp/client-stream-management": "^0.0.0",
     "@xmpp/client-tcp": "^0.0.0",
-    "@xmpp/client-websocket": "^0.0.0"
+    "@xmpp/client-websocket": "^0.0.0",
+    "@xmpp/jid": "^0.0.0",
+    "@xmpp/xml": "^0.0.0"
   },
   "browser": {
-    "@xmpp/client-tcp": false
+    "@xmpp/client-tcp": false,
+    "@xmpp/srv": false
   }
 }

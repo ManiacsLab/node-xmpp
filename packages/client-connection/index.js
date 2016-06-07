@@ -40,6 +40,7 @@ Client.prototype.connect = function (uri, cb = () => {}) {
     transport.on(e, (...args) => this.emit(e, ...args))
   })
   transport.on('element', (element) => this._onelement(element))
+  transport.on('close', (element) => this._onclose())
 
   transport.connect(params, (err, ...args) => {
     if (err) return cb(err)
@@ -48,7 +49,7 @@ Client.prototype.connect = function (uri, cb = () => {}) {
   })
 }
 
-Client.prototype.open = function (params, cb = () => {}) {
+Client.prototype.open = function (params = {}, cb = () => {}) {
   if (typeof params === 'string') {
     params = {domain: params}
   } else if (typeof params === 'function') {
@@ -70,6 +71,10 @@ Client.prototype.open = function (params, cb = () => {}) {
 
 Client.prototype.close = function (cb) {
   this.transport.close(cb)
+}
+
+Client.prototype._onclose = function () {
+  delete this._domain
 }
 
 Client.prototype._restart = function (cb) {

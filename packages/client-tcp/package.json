@@ -6,8 +6,8 @@
   "version": "0.0.0",
   "license": "ISC",
   "dependencies": {
+    "@xmpp/xml": "^0.0.0",
     "debug": "^2.2.0",
-    "inherits": "^2.0.1",
-    "ltx": "^2.4.0"
+    "events": "^1.1.0"
   }
 }
