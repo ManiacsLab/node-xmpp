@@ -17,5 +17,8 @@
     "@xmpp/client-sasl-scram-sha-1": "^0.0.0",
     "@xmpp/client-tcp": "^0.0.0",
     "@xmpp/client-websocket": "^0.0.0"
+  },
+  "browser": {
+    "@xmpp/client-tcp": false
   }
 }
