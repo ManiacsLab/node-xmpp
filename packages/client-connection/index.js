@@ -14,7 +14,7 @@ class Client extends EventEmitter {
     this.transport = null
     this.jid = null
     this.uri = ''
-    this.domain = ''
+    this._domain = ''
     this.options = typeof options === 'object' ? options : {}
   }
 
@@ -59,8 +59,7 @@ class Client extends EventEmitter {
 
     this.transport.open(domain, (err, features) => {
       if (err) return cb(err)
-      // we can't use domain property because EventEmitter uses it
-      this.domain = domain
+      this._domain = domain
       this.features = features
       this.emit('open', features)
       cb(null, features)
@@ -72,11 +71,11 @@ class Client extends EventEmitter {
   }
 
   _onclose () {
-    delete this.domain
+    delete this._domain
   }
 
   _restart (cb) {
-    this.transport.restart(this.domain, (err, features) => {
+    this.transport.restart(this._domain, (err, features) => {
       if (err) return cb(err)
       this.features = features
       cb()

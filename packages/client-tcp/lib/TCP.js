@@ -22,7 +22,7 @@ class TCP extends EventEmitter {
     parser.on('element', (el) => this.emit('element', el))
   }
 
-  connect (host, cb) {
+  connect (uri, cb) {
     const sock = this.socket = new net.Socket()
     // FIXME remove listeners when closed/errored
     sock.once('connect', this._connectListener.bind(this))
@@ -30,7 +30,7 @@ class TCP extends EventEmitter {
     sock.once('close', this._closeListener.bind(this))
     sock.once('error', this._errorListener.bind(this))
 
-    const {hostname, port} = url.parse('xmpp:' + host)
+    const {hostname, port} = url.parse(uri)
 
     sock.connect({port: port || 5222, hostname}, cb)
     // if (cb) {
@@ -148,7 +148,7 @@ class TCP extends EventEmitter {
   }
 
   static match (uri) {
-    return uri.includes('://') ? false : uri
+    return uri.startsWith('xmpp:') ? uri : false
   }
 }
 
