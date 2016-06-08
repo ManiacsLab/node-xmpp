@@ -5,6 +5,7 @@ const xml = require('@xmpp/xml')
 const net = require('net')
 const debug = require('debug')('xmpp:client:tcp')
 const StreamParser = require('./StreamParser')
+const url = require('url')
 
 const NS_STREAM = 'http://etherx.jabber.org/streams'
 const NS_CLIENT = 'jabber:client'
@@ -21,7 +22,7 @@ class TCP extends EventEmitter {
     parser.on('element', (el) => this.emit('element', el))
   }
 
-  connect (url, cb) {
+  connect (host, cb) {
     const sock = this.socket = new net.Socket()
     // FIXME remove listeners when closed/errored
     sock.once('connect', this._connectListener.bind(this))
@@ -29,7 +30,9 @@ class TCP extends EventEmitter {
     sock.once('close', this._closeListener.bind(this))
     sock.once('error', this._errorListener.bind(this))
 
-    sock.connect({port: 5222, hostname: 'localhost'}, cb)
+    const {hostname, port} = url.parse('xmpp:' + host)
+
+    sock.connect({port: port || 5222, hostname}, cb)
     // if (cb) {
     //   const onConnect = () => {
     //     cb()
@@ -45,7 +48,6 @@ class TCP extends EventEmitter {
   }
 
   open (domain, cb) {
-    domain = 'localhost'
     // FIXME timeout
     this.parser.once('streamStart', attrs => {
       const el = new xml.Element('stream:stream', attrs)
@@ -74,7 +76,6 @@ class TCP extends EventEmitter {
   }
 
   restart (domain, cb) {
-    domain = 'localhost'
     // FIXME timeout
     this.parser.once('streamStart', attrs => {
       const el = new xml.Element('stream:stream', attrs)
@@ -102,17 +103,16 @@ class TCP extends EventEmitter {
     `)
   }
 
-  // https://tools.ietf.org/html/rfc7395#section-3.6
+  // https://xmpp.org/rfcs/rfc6120.html#streams-close
   close (cb) {
-    // FIXME timeout
-    const handler = (element) => {
-      // if (!element.is('close', NS_FRAMING)) return
+    // TODO timeout
+    const handler = () => {
       this.socket.close()
-      this.removeListener('element', handler)
-      if (cb) this.once('close', cb) // FIXME timeout
+      this.parser.removeListener('end', handler)
+      if (cb) this.once('close', cb)
     }
-    this.on('element', handler)
-    // this.send(xml`<close xmlns="${NS_FRAMING}"/>`)
+    this.parser.on('end', handler)
+    this.write('</stream:stream>')
   }
 
   _connectListener () {

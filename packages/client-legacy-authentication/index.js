@@ -43,8 +43,7 @@ function authenticate (client, credentials, features, cb) {
   // so we assign a dumb function that'll simply callback
   client.bind = bind
 
-  // FIXME use JID()?
-  const jid = new JID(credentials.username, client._domain, resource)
+  const jid = new JID(credentials.username, client.domain, resource)
   client._legacy_authentication_jid = jid
 
   const iq = xml`

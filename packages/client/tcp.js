@@ -48,7 +48,7 @@ client.on('stanza', () => {})
 // emitted for any incoming nonza
 client.on('nonza', () => {})
 
-client.connect({uri: 'localhost:5280', username: 'sonny', password: 'foobar'}, function (err) {
+client.connect({uri: 'localhost', username: 'sonny', password: 'foobar'}, function (err) {
   if (err) return console.error(err)
   console.log(client.jid.toString())
 })
