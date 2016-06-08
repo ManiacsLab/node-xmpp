@@ -4,41 +4,55 @@ const EventEmitter = require('events')
 const xml = require('@xmpp/xml')
 const net = require('net')
 const debug = require('debug')('xmpp:client:tcp')
+const StreamParser = require('./StreamParser')
 
 const NS_STREAM = 'http://etherx.jabber.org/streams'
+const NS_CLIENT = 'jabber:client'
 
 /* References
  * Extensible Messaging and Presence Protocol (XMPP): Core http://xmpp.org/rfcs/rfc6120.html
 */
 
 class TCP extends EventEmitter {
-  connect (url, cb) {
-    const sock = this.socket = new net.Socket(url, ['xmpp'])
-    // FIXME remove listeners when closed/errored
-    sock.addEventListener('open', this._openListener.bind(this))
-    sock.addEventListener('message', this._messageListener.bind(this))
-    sock.addEventListener('close', this._closeListener.bind(this))
-    sock.addEventListener('error', this._errorListener.bind(this))
+  constructor (options) {
+    super()
 
-    if (cb) {
-      const onConnect = () => {
-        cb()
-        sock.removeListener('error', onError)
-      }
-      const onError = (err) => {
-        cb(err)
-        sock.removeListener('connect', onConnect)
-      }
-      this.once('connect', onConnect)
-      this.once('error', onError)
-    }
+    const parser = this.parser = new StreamParser()
+    parser.on('element', (el) => this.emit('element', el))
+  }
+
+  connect (url, cb) {
+    const sock = this.socket = new net.Socket()
+    // FIXME remove listeners when closed/errored
+    sock.once('connect', this._connectListener.bind(this))
+    sock.on('data', this._dataListener.bind(this))
+    sock.once('close', this._closeListener.bind(this))
+    sock.once('error', this._errorListener.bind(this))
+
+    sock.connect({port: 5222, hostname: 'localhost'}, cb)
+    // if (cb) {
+    //   const onConnect = () => {
+    //     cb()
+    //     sock.removeListener('error', onError)
+    //   }
+    //   const onError = (err) => {
+    //     cb(err)
+    //     sock.removeListener('connect', onConnect)
+    //   }
+    //   this.once('connect', onConnect)
+    //   this.once('error', onError)
+    // }
   }
 
   open (domain, cb) {
+    domain = 'localhost'
     // FIXME timeout
-    this.once('element', el => {
-      if (el.name !== 'open') return // FIXME error
+    this.parser.once('streamStart', attrs => {
+      const el = new xml.Element('stream:stream', attrs)
+      if (el.name !== 'stream:stream') return // FIXME error
       if (el.attrs.version !== '1.0') return // FIXME error
+      if (el.attrs.xmlns !== NS_CLIENT) return // FIXME error
+      if (el.attrs['xmlns:stream'] !== NS_STREAM) return // FIXME error
       // if (el.attrs.xmlns !== NS_FRAMING) return // FIXME error
       if (el.attrs.from !== domain) return // FIXME error
       if (!el.attrs.id) return // FIXME error
@@ -48,23 +62,26 @@ class TCP extends EventEmitter {
       // FIXME timeout
       this.once('element', el => {
         if (el.name !== 'stream:features') return // FIXME error
-        if (el.attrs['xmlns:stream'] !== NS_STREAM) return // FIXME error
-     // if (stanza.attrs.xmlns !== NS_CLIENT) FIXME what about this one?
 
         cb(null, el)
         this.emit('stream:features', el)
       })
     })
-    // this.send(xml`
-    //   <open version="1.0" xmlns="${NS_FRAMING}" to="${domain}"/>
-    // `)
+    this.write(`
+      <?xml version='1.0'?>
+      <stream:stream to='localhost' version='1.0' xml:lang='en' xmlns='${NS_CLIENT}' xmlns:stream='${NS_STREAM}'>
+    `)
   }
 
   restart (domain, cb) {
+    domain = 'localhost'
     // FIXME timeout
-    this.once('element', el => {
-      if (el.name !== 'open') return // FIXME error
+    this.parser.once('streamStart', attrs => {
+      const el = new xml.Element('stream:stream', attrs)
+      if (el.name !== 'stream:stream') return // FIXME error
       if (el.attrs.version !== '1.0') return // FIXME error
+      if (el.attrs.xmlns !== NS_CLIENT) return // FIXME error
+      if (el.attrs['xmlns:stream'] !== NS_STREAM) return // FIXME error
       // if (el.attrs.xmlns !== NS_FRAMING) return // FIXME error
       if (el.attrs.from !== domain) return // FIXME error
       if (!el.attrs.id) return // FIXME error
@@ -74,15 +91,15 @@ class TCP extends EventEmitter {
       // FIXME timeout
       this.once('element', el => {
         if (el.name !== 'stream:features') return // FIXME error
-        if (el.attrs['xmlns:stream'] !== NS_STREAM) return // FIXME error
-     // if (stanza.attrs.xmlns !== NS_CLIENT) FIXME what about this one?
 
         cb(null, el)
+        this.emit('stream:features', el)
       })
     })
-    // this.send(xml`
-    //   <open version="1.0" xmlns="${NS_FRAMING}" to="${domain}"/>
-    // `)
+    this.write(`
+      <?xml version='1.0'?>
+      <stream:stream to='localhost' version='1.0' xml:lang='en' xmlns='${NS_CLIENT}' xmlns:stream='${NS_STREAM}'>
+    `)
   }
 
   // https://tools.ietf.org/html/rfc7395#section-3.6
@@ -98,17 +115,15 @@ class TCP extends EventEmitter {
     // this.send(xml`<close xmlns="${NS_FRAMING}"/>`)
   }
 
-  _openListener () {
+  _connectListener () {
     debug('opened')
     this.emit('connect')
   }
 
-  _messageListener ({data}) {
-    debug('<-', data)
-    // if (typeof data !== 'string') FIXME stream error
+  _dataListener (data) {
+    debug('<-', data.toString('utf8'))
 
-    const element = xml.parse(data) // FIXME use StreamParser
-    this.emit('element', element)
+    this.parser.write(data.toString('utf8'))
   }
 
   _closeListener () {
@@ -121,10 +136,15 @@ class TCP extends EventEmitter {
     this.emit('error', error)
   }
 
+  write (data) {
+    data = data.trim()
+    debug('->', data)
+    this.socket.write(data, 'utf8')
+  }
+
   send (data) {
     data = data.root().toString()
-    debug('->', data)
-    this.socket.send(data)
+    this.write(data)
   }
 
   static match (uri) {

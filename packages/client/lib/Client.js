@@ -17,6 +17,7 @@ const plugins = [
   require('@xmpp/client-stream-management'),
   require('@xmpp/client-websocket'),
   require('@xmpp/client-bosh'),
+  require('@xmpp/client-tcp'),
   require('@xmpp/client-http'),
   require('@xmpp/client-alternative-connection-methods-http')
 // TODO
@@ -25,7 +26,6 @@ const plugins = [
 // require('@xmpp/client-promise')
 // require('@xmpp/client-ping')
 // require('@xmpp/client-pong')
-// require('@xmpp/client-tcp')
 // require('@xmpp/srv')
 // require('@xmpp/client-promise')
 // require('@xmpp/client-ping')
@@ -53,8 +53,8 @@ class Client extends Connection {
     }
 
     // TODO promise, SRV
-    this.getAltnernativeConnectionsMethods('localhost', (err, methods) => {
-      console.log(err || methods)
+    // this.getAltnernativeConnectionsMethods('localhost', (err, methods) => {
+      // console.log(err || methods)
       super.connect(params.uri, (err) => {
         if (err) return cb(err)
         this.open(params.domain, (err) => {
@@ -68,7 +68,7 @@ class Client extends Connection {
           })
         })
       })
-    })
+    // })
   }
 }
 

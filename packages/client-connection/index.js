@@ -92,9 +92,6 @@ class Client extends EventEmitter {
     )
       ? this.emit('stanza', element)
       : this.emit('nonza', element)
-
-    // FIXME send service-unavailable for un-handled iqs
-    // maybe if (!this._iqMatches) ? (client-iq-callee)
   }
 
   send (stanza) {
@@ -105,7 +102,7 @@ class Client extends EventEmitter {
       case 'iq':
       case 'presence':
       case 'message':
-        stanza.attrs.xmlns = NS_CLIENT
+        stanza.attrs.xmlns = stanza.attrs.xmlns || NS_CLIENT
     }
 
     if (debug.enabled) {
