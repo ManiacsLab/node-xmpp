@@ -1,5 +1,5 @@
 {
-  "name": "@xmpp/client-alternative-connection-methods",
+  "name": "@xmpp/client-alternative-connection-methods-http",
   "repository": "github:node-xmpp/node-xmpp",
   "homepage": "http://github.com/node-xmpp/node-xmpp",
   "bugs": "http://github.com/node-xmpp/node-xmpp/issues",

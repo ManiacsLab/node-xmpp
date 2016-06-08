@@ -17,10 +17,6 @@ const REL_BOSH = 'urn:xmpp:alt-connections:xbosh'
 const REL_WS = 'urn:xmpp:alt-connections:websocket'
 const HOST_META = '/.well-known/host-meta'
 
-// fetch = foo.http
-
-// fetch('http')
-
 function getAltnernativeConnectionsMethods (domain, cb) {
   this.http('http://' + domain + HOST_META, {
     headers: {
@@ -29,8 +25,13 @@ function getAltnernativeConnectionsMethods (domain, cb) {
   }, (err, response) => {
     if (err) return cb(err)
     response.text().then(text => {
-      console.log(text)
-      const doc = xml(text)
+      let doc
+      try {
+        doc = xml(text)
+      } catch (e) {
+        cb(new Error('invalid XRD document'))
+      }
+
       if (!doc.is('XRD', NS_XRD)) {
         cb(new Error('invalid XRD document'))
         return

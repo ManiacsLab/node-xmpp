@@ -6,7 +6,6 @@ const Connection = require('@xmpp/client-connection')
 const plugins = [
   require('@xmpp/client-authentication'),
   require('@xmpp/client-bind'),
-//require('@xmpp/client-reconnect') TODO
   require('@xmpp/client-sasl'),
   require('@xmpp/client-sasl-anonymous'),
   require('@xmpp/client-sasl-digest-md5'),
@@ -19,32 +18,18 @@ const plugins = [
   require('@xmpp/client-websocket'),
   require('@xmpp/client-bosh'),
   require('@xmpp/client-http'),
-  require('@xmpp/client-alternative-connection-methods')
+  require('@xmpp/client-alternative-connection-methods-http')
+// TODO
+// require('@xmpp/client-reconnect')
+// require('@xmpp/client-alternative-connection-methods-srv')
+// require('@xmpp/client-promise')
+// require('@xmpp/client-ping')
+// require('@xmpp/client-pong')
+// require('@xmpp/client-tcp')
+// require('@xmpp/srv')
+// require('@xmpp/client-promise')
+// require('@xmpp/client-ping')
 ]
-// const plugins = [
-//   'authentication',
-//   'bind',
-//   // 'reconnect', TODO
-//   'sasl',
-//   'sasl-anonymous', TODO
-//   'sasl-digest-md5',
-//   'sasl-plain',
-//   'sasl-scram-sha-1',
-//   'legacy-authentication',
-//   'iq-callee',
-//   'iq-caller',
-//   'stream-management',
-//   // 'tcp', TODO
-//   // 'bosh', TODO
-//   'websocket',
-//   // 'srv' TODO
-//   'bosh',
-//   'http',
-//   // 'srv', TODO
-//   'alternative-connection-methods'
-//   // 'promise', TODO
-//   // 'ping', TODO
-// ]
 
 class Client extends Connection {
   constructor () {
@@ -67,15 +52,19 @@ class Client extends Connection {
       Object.assign(params, options)
     }
 
-    return super.connect(params.uri, (err) => {
-      if (err) return cb(err)
-      this.open(params.domain, (err) => {
+    // TODO promise, SRV
+    this.getAltnernativeConnectionsMethods('localhost', (err, methods) => {
+      console.log(err || methods)
+      super.connect(params.uri, (err) => {
         if (err) return cb(err)
-        this.authenticate(params, (err) => {
+        this.open(params.domain, (err) => {
           if (err) return cb(err)
-          this.bind(params.resource, (err) => {
+          this.authenticate(params, (err) => {
             if (err) return cb(err)
-            cb()
+            this.bind(params.resource, (err) => {
+              if (err) return cb(err)
+              cb()
+            })
           })
         })
       })

@@ -13,7 +13,7 @@ const doc = xml`
 </XRD>
 `
 
-var server = require('http').createServer()
+var server = http.createServer()
 server.on('request', (req, res) => {
   if (req.url === '/.well-known/host-meta') {
     res.writeHead(200)

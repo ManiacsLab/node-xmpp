@@ -6,7 +6,7 @@
   "version": "0.0.0",
   "license": "ISC",
   "dependencies": {
-    "@xmpp/client-alternative-connection-methods": "^0.0.0",
+    "@xmpp/client-alternative-connection-methods-http": "^0.0.0",
     "@xmpp/client-authentication": "^0.0.0",
     "@xmpp/client-bind": "^0.0.0",
     "@xmpp/client-bosh": "^0.0.0",
