@@ -11,7 +11,6 @@
   "dependencies": {
     "@xmpp/xml": "^0.0.0",
     "debug": "^2.2.0",
-    "events": "^1.1.0",
     "ws": "^1.1.0"
   }
 }

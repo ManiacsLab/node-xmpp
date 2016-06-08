@@ -55,7 +55,6 @@ class TCP extends EventEmitter {
       if (el.attrs.version !== '1.0') return // FIXME error
       if (el.attrs.xmlns !== NS_CLIENT) return // FIXME error
       if (el.attrs['xmlns:stream'] !== NS_STREAM) return // FIXME error
-      // if (el.attrs.xmlns !== NS_FRAMING) return // FIXME error
       if (el.attrs.from !== domain) return // FIXME error
       if (!el.attrs.id) return // FIXME error
 
