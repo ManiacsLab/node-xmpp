@@ -6,7 +6,7 @@
  */
 
 const JID = require('@xmpp/jid')
-const ltx = require('ltx')
+const xml = require('@xmpp/xml')
 const debug = require('debug')('xmpp:client:legacy-authentication')
 
 const NS = 'http://jabber.org/features/iq-auth'
@@ -47,7 +47,7 @@ function authenticate (client, credentials, features, cb) {
   const jid = new JID(credentials.username, client._domain, resource)
   client._legacy_authentication_jid = jid
 
-  const iq = ltx`
+  const iq = xml`
     <iq type='set'>
       <query xmlns='${NS_AUTH}'>
         <username>${jid.local}</username>

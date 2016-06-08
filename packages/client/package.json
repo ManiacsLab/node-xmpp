@@ -6,10 +6,12 @@
   "version": "0.0.0",
   "license": "ISC",
   "dependencies": {
+    "@xmpp/client-alternative-connection-methods": "^0.0.0",
     "@xmpp/client-authentication": "^0.0.0",
     "@xmpp/client-bind": "^0.0.0",
-    "@xmpp/client-connection": "^0.0.0",
     "@xmpp/client-bosh": "^0.0.0",
+    "@xmpp/client-connection": "^0.0.0",
+    "@xmpp/client-http": "^0.0.0",
     "@xmpp/client-iq-callee": "^0.0.0",
     "@xmpp/client-iq-caller": "^0.0.0",
     "@xmpp/client-legacy-authentication": "^0.0.0",
@@ -26,6 +28,9 @@
   },
   "browser": {
     "@xmpp/client-tcp": false,
-    "@xmpp/srv": false
+    "@xmpp/srv": false,
+    "crypto": false,
+    "url": false,
+    "node-fetch": false
   }
 }

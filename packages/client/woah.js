@@ -1,7 +1,6 @@
 'use strict'
 
 const {Client, jid, xml} = require('.')
-
 const client = new Client()
 
 // emitted for any error
@@ -49,7 +48,12 @@ client.on('stanza', () => {})
 // emitted for any incoming nonza
 client.on('nonza', () => {})
 
-client.connect({uri: 'ws://localhost:5280/xmpp-websocket', username: 'sonny', password: 'foobar'}, function (err) {
-  if (err) return console.error(err)
-  console.log(client.jid.toString())
+// client.connect({uri: 'ws://localhost:5280/xmpp-websocket', username: 'sonny', password: 'foobar'}, function (err) {
+//   if (err) return console.error(err)
+//   console.log(client.jid.toString())
+// })
+
+
+client.getAltnernativeConnectionsMethods('localhost', (err, methods) => {
+  console.log(err || methods)
 })
