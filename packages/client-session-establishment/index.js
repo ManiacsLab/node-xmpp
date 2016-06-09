@@ -11,7 +11,7 @@ const ltx = require('ltx')
 
 const NS = 'urn:ietf:params:xml:ns:xmpp-session'
 
-function session (cb) {
+function establishSession (cb) {
   return this.request(ltx`
     <iq type='set'>
      <session xmlns='${NS}'/>
@@ -20,5 +20,5 @@ function session (cb) {
 }
 
 module.exports = (client) => {
-  client.session = session
+  client.establishSession = establishSession
 }

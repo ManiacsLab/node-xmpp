@@ -20,6 +20,7 @@
     "@xmpp/client-sasl-digest-md5": "^0.0.0",
     "@xmpp/client-sasl-plain": "^0.0.0",
     "@xmpp/client-sasl-scram-sha-1": "^0.0.0",
+    "@xmpp/client-session-establishment": "^0.0.0",
     "@xmpp/client-stream-management": "^0.0.0",
     "@xmpp/client-tcp": "^0.0.0",
     "@xmpp/client-websocket": "^0.0.0",
