@@ -1,23 +1,36 @@
-'use strict'
+'use strict';
 
-const debug = require('debug')('xmpp:client:authentication')
-
-function authenticate (creds, cb) {
-  const auth = this.authenticators.find(auth => auth.match(this.features))
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.authenticate = authenticate;
+exports.clientAuthenticate = clientAuthenticate;
+exports.plugin = plugin;
+function authenticate(client, creds, cb) {
+  var auth = client.authenticators.find(function (auth) {
+    return auth.match(client.features);
+  });
 
   if (!auth) {
-    const msg = 'no compatible authentication'
-    debug(msg)
-    setTimeout(() => { cb(new Error(msg)) })
-    return
+    // dezalgo... TODO use process.nextTick/setImmediate/Promise.resolve/... when available
+    setTimeout(function () {
+      cb(new Error('no compatible authentication'));
+    });
+    return;
   }
 
-  debug(`using "${auth.name}" authentication`)
-
-  auth.authenticate(this, creds, this.features, cb)
+  auth.authenticate(client, creds, client.features, cb);
 }
 
-module.exports = function (client) {
-  client.authenticators = []
-  client.authenticate = authenticate
+function clientAuthenticate() {
+  for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  authenticate.apply(undefined, [this].concat(args));
+}
+
+function plugin(client) {
+  client.authenticators = [];
+  client.authenticate = clientAuthenticate;
 }

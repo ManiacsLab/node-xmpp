@@ -5,7 +5,7 @@
   "bugs": "http://github.com/node-xmpp/node-xmpp/issues",
   "version": "0.0.0",
   "license": "ISC",
-  "dependencies": {
-    "debug": "^2.2.0"
+  "scripts": {
+    "make": "../../node_modules/.bin/babel src/ -d ."
   }
 }

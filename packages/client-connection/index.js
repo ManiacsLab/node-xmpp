@@ -114,7 +114,7 @@ class Client extends EventEmitter {
   use (plugin) {
     if (this.plugins.includes(plugin)) return
     this.plugins.push(plugin)
-    plugin(this)
+    typeof plugin.plugin === 'function' ? plugin.plugin(this) : plugin(this)
   }
 }
 
