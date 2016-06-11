@@ -30,7 +30,7 @@
     "bootstrap": "lerna bootstrap",
     "bundle": "lerna run bundle",
     "integration": "mocha --recursive test/integration -t 5000",
-    "test": "npm run coverage && npm run lint && lerna run test",
+    "test": "npm run coverage && npm run lint && lerna run test && npm run newtest",
     "coverage": "istanbul cover _mocha --report lcovonly -- -R spec --recursive packages/*/test/ -t 5000",
     "coveralls": "cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
     "test:browser": "phantomjs ./node_modules/mocha-phantomjs-core/mocha-phantomjs-core.js http://localhost:8000/test/browser/ spec '{\"ignoreResourceErrors\": true}'"
