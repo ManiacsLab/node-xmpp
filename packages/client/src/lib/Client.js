@@ -1,42 +1,13 @@
-'use strict'
+import Connection from '@xmpp/client-connection'
+import plugins from './plugins'
 
-const Connection = require('@xmpp/client-connection')
-
-// plugins
-const plugins = [
-  require('@xmpp/client-authentication'),
-  require('@xmpp/client-bind'),
-  require('@xmpp/client-sasl'),
-  require('@xmpp/client-sasl-anonymous'),
-  require('@xmpp/client-sasl-digest-md5'),
-  require('@xmpp/client-sasl-plain'),
-  require('@xmpp/client-sasl-scram-sha-1'),
-  require('@xmpp/client-legacy-authentication'),
-  require('@xmpp/client-iq-callee'),
-  require('@xmpp/client-iq-caller'),
-  require('@xmpp/client-stream-management'),
-  require('@xmpp/client-websocket'),
-  require('@xmpp/client-bosh'),
-  require('@xmpp/client-tcp'),
-  require('@xmpp/client-http'),
-  require('@xmpp/client-alternative-connection-methods-http'),
-  require('@xmpp/client-session-establishment')
-// TODO
-// require('@xmpp/client-reconnect')
-// require('@xmpp/client-alternative-connection-methods-srv')
-// require('@xmpp/client-promise')
-// require('@xmpp/client-ping')
-// require('@xmpp/client-pong')
-// require('@xmpp/srv')
-// require('@xmpp/client-promise')
-// require('@xmpp/client-ping')
-]
-
-class Client extends Connection {
+export default class Client extends Connection {
   constructor () {
     super()
     // TODO move to client-connection ?
+    let f = 0
     plugins.forEach(plugin => {
+      console.log(f++)
       // plugin = require('@xmpp/client-' + plugin)
       // // ignored by bundler
       // if (typeof plugin !== 'function' || Object.keys(plugin) === 0) return
@@ -78,5 +49,3 @@ class Client extends Connection {
     // })
   }
 }
-
-module.exports = Client

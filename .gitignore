@@ -9,3 +9,9 @@ coverage/
 npm-debug.log*
 lerna-debug.log*
 bundle.js
+
+packages/*/index.js
+packages/*/lib/
+
+!packages/node-*/index.js
+!packages/node-*/lib/

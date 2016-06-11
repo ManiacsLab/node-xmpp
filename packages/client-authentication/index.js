@@ -34,3 +34,5 @@ function plugin(client) {
   client.authenticators = [];
   client.authenticate = clientAuthenticate;
 }
+
+exports.default = plugin;

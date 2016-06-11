@@ -10,7 +10,7 @@
     "browserify": "^13.0.1",
     "coveralls": "^2.11.8",
     "istanbul": "^0.4.2",
-    "lerna": "2.0.0-beta.16",
+    "lerna": "2.0.0-beta.18",
     "mocha": "^2.5.3",
     "mocha-phantomjs-core": "^1.3.1",
     "pem": "^1.8.3",
@@ -22,7 +22,7 @@
   },
   "scripts": {
     "ava": "ava packages/*/test.js",
-    "make": "lerna run make",
+    "make": "lerna exec --scope '@xmpp/*' -- ../../node_modules/.bin/babel src/ -d .",
     "newtest": "npm run make && npm run ava",
     "postinstall": "npm run bootstrap",
     "lint": "standard",

@@ -18,3 +18,5 @@ export function plugin (client) {
   client.authenticators = []
   client.authenticate = clientAuthenticate
 }
+
+export default plugin

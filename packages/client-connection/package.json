@@ -4,9 +4,5 @@
   "homepage": "http://github.com/node-xmpp/node-xmpp",
   "bugs": "http://github.com/node-xmpp/node-xmpp/issues",
   "version": "0.0.0",
-  "license": "ISC",
-  "dependencies": {
-    "debug": "^2.2.0",
-    "events": "^1.1.0"
-  }
+  "license": "ISC"
 }

@@ -1,12 +1,11 @@
 'use strict'
 
-const EventEmitter = require('events')
-const xml = require('@xmpp/xml')
-const WS = require('ws')
-const debug = require('debug')('xmpp:client:websocket')
+import EventEmitter from 'events'
+import {parse} from '@xmpp/xml'
+import WS from 'ws'
 
-const NS_FRAMING = 'urn:ietf:params:xml:ns:xmpp-framing'
-const NS_STREAM = 'http://etherx.jabber.org/streams'
+export const NS_FRAMING = 'urn:ietf:params:xml:ns:xmpp-framing'
+export const NS_STREAM = 'http://etherx.jabber.org/streams'
 
 /* References
  * WebSocket protocol https://tools.ietf.org/html/rfc6455
@@ -58,9 +57,7 @@ class WebSocket extends EventEmitter {
         this.emit('stream:features', el)
       })
     })
-    this.send(xml`
-      <open version="1.0" xmlns="${NS_FRAMING}" to="${domain}"/>
-    `)
+    this.send(<open version='1.0' xmlns={NS_FRAMING} to={domain} />)
   }
 
   restart (domain, cb) {
@@ -83,9 +80,7 @@ class WebSocket extends EventEmitter {
         cb(null, el)
       })
     })
-    this.send(xml`
-      <open version="1.0" xmlns="${NS_FRAMING}" to="${domain}"/>
-    `)
+    this.send(<open version='1.0' xmlns={NS_FRAMING} to={domain} />)
   }
 
   // https://tools.ietf.org/html/rfc7395#section-3.6
@@ -98,35 +93,30 @@ class WebSocket extends EventEmitter {
       if (cb) this.once('close', cb) // FIXME timeout
     }
     this.on('element', handler)
-    this.send(xml`<close xmlns="${NS_FRAMING}"/>`)
+    this.send(<close xmlns={NS_FRAMING} />)
   }
 
   _openListener () {
-    debug('opened')
     this.emit('connect')
   }
 
   _messageListener ({data}) {
-    debug('<-', data)
     // if (typeof data !== 'string') FIXME stream error
 
-    const element = xml.parse(data) // FIXME use StreamParser
+    const element = parse(data) // FIXME use StreamParser
     this.emit('element', element)
   }
 
   _closeListener () {
-    debug('closed')
     this.emit('close')
   }
 
   _errorListener (error) {
-    debug('errored')
     this.emit('error', error)
   }
 
   send (data) {
     data = data.root().toString()
-    debug('->', data)
     this.socket.send(data)
   }
 
@@ -135,7 +125,4 @@ class WebSocket extends EventEmitter {
   }
 }
 
-WebSocket.NS_FRAMING = NS_FRAMING
-WebSocket.NS_STREAM = NS_STREAM
-
-module.exports = WebSocket
+export default WebSocket

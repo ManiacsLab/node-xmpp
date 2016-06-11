@@ -4,8 +4,5 @@
   "homepage": "http://github.com/node-xmpp/node-xmpp",
   "bugs": "http://github.com/node-xmpp/node-xmpp/issues",
   "version": "0.0.0",
-  "license": "ISC",
-  "scripts": {
-    "make": "../../node_modules/.bin/babel src/ -d ."
-  }
+  "license": "ISC"
 }
