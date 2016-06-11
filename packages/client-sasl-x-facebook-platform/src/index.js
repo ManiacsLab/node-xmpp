@@ -1,7 +1,7 @@
-'use strict'
+import mech from 'sasl-x-facebook-platform'
 
-const mech = require('sasl-x-facebook-platform')
-
-module.exports = function (client) {
+export function plugin (client) {
   client.SASL.use(mech)
 }
+
+export default plugin

@@ -1,7 +1,7 @@
-'use strict'
+import mech from 'sasl-scram-sha-1'
 
-const mech = require('sasl-scram-sha-1')
-
-module.exports = function (client) {
+export function plugin (client) {
   client.SASL.use(mech)
 }
+
+export default plugin

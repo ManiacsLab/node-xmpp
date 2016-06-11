@@ -5,9 +5,7 @@ export default class Client extends Connection {
   constructor () {
     super()
     // TODO move to client-connection ?
-    let f = 0
     plugins.forEach(plugin => {
-      console.log(f++)
       // plugin = require('@xmpp/client-' + plugin)
       // // ignored by bundler
       // if (typeof plugin !== 'function' || Object.keys(plugin) === 0) return

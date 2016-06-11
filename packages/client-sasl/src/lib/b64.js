@@ -1,8 +1,6 @@
-'use strict'
-
 // FIXME move to its own module?
 
-module.exports.encode = function encode (string) {
+export function encode (string) {
   if (!global.Buffer) return global.atob(string)
 
   return (Buffer.from
@@ -11,7 +9,7 @@ module.exports.encode = function encode (string) {
   ).toString('base64')
 }
 
-module.exports.decode = function decode (string) {
+export function decode (string) {
   if (!global.Buffer) return global.btoa(string)
 
   return (Buffer.from
@@ -19,3 +17,5 @@ module.exports.decode = function decode (string) {
     : new Buffer(string, 'base64')
   ).toString('utf8')
 }
+
+export default {encode, decode}

@@ -1,7 +1,7 @@
-'use strict'
+import mech from 'alt-sasl-digest-md5'
 
-const mech = require('alt-sasl-digest-md5')
-
-module.exports = function (client) {
+export function plugin (client) {
   client.SASL.use(mech)
 }
+
+export default plugin

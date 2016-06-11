@@ -46,3 +46,5 @@ export function clientBind (...args) {
 export function plugin (client) {
   client.bind = clientBind
 }
+
+export default plugin

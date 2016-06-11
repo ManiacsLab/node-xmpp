@@ -1,13 +1,11 @@
 'use strict'
 
-const ltx = require('ltx')
-const debug = require('debug')('xmpp:client:sasl')
-const SASLFactory = require('saslmechanisms')
-const {encode, decode} = require('./b64')
+import SASLFactory from 'saslmechanisms'
+import {encode, decode} from './lib/b64'
 
-const NS_SASL = 'urn:ietf:params:xml:ns:xmpp-sasl'
+export const NS = 'urn:ietf:params:xml:ns:xmpp-sasl'
 
-function getBestMechanism (SASL, mechs, features) {
+export function getBestMechanism (SASL, mechs, features) {
   // FIXME preference order ?
   // var SASL = new SASLFactory()
   // mechs.forEach((mech) => {
@@ -21,14 +19,15 @@ function getBestMechanism (SASL, mechs, features) {
   //   }
   // })
 
-  const mechanisms = features.getChild('mechanisms', NS_SASL).children.map(el => el.text())
+  const mechanisms = features.getChild('mechanisms', NS).children.map(el => el.text())
   return SASL.create(mechanisms)
 }
 
-function authenticate (client, credentials, features, cb) {
+export function authenticate (client, credentials, features, cb) {
   const mech = getBestMechanism(client.SASL, client.options.sasl, features)
   if (!mech) {
-    debug('no compatible mechanism')
+    // dezalgo...
+    setTimeout(() => { cb(new Error('no compatible mechanism')) })
     return
   }
 
@@ -44,25 +43,17 @@ function authenticate (client, credentials, features, cb) {
     serviceName: domain
   }, credentials)
 
-  if (debug.enabled) {
-    const {password} = creds
-    creds.password = '******'
-    debug('using ', mech.name, 'with credentials', creds)
-    creds.password = password
-  }
-
   const handler = (element) => {
-    if (element.attrs.xmlns !== NS_SASL) return
-
-    debug('<-', element.name)
+    if (element.attrs.xmlns !== NS) return
 
     if (element.name === 'challenge') {
       mech.challenge(decode(element.text()))
       const resp = mech.response(creds)
-      debug('-> response')
-      client.send(ltx`
-        <response xmlns='${NS_SASL}' mechanism='${mech.name}'>${typeof resp === 'string' ? encode(resp) : ''}</response>
-      `)
+      client.send(
+        <response xmlns={NS} mechanism={mech.name}>
+          {typeof resp === 'string' ? encode(resp) : ''}
+        </response>
+      )
       return
     }
 
@@ -77,20 +68,23 @@ function authenticate (client, credentials, features, cb) {
   client.on('nonza', handler)
 
   if (mech.clientFirst) {
-    debug('-> auth')
-    client.send(ltx`
-      <auth xmlns='${NS_SASL}' mechanism='${mech.name}'>${encode(mech.response(creds))}</auth>
-    `)
+    client.send(
+      <auth xmlns={NS} mechanism={mech.name}>
+        {encode(mech.response(creds))}
+      </auth>
+    )
   }
 }
 
-function match (features) {
-  return !!features.getChild('mechanisms', NS_SASL)
+export function match (features) {
+  return !!features.getChild('mechanisms', NS)
 }
 
-const authenticator = {authenticate, match, name: 'SASL'}
+export const authenticator = {authenticate, match, name: 'SASL'}
 
-module.exports = function (client) {
+export function plugin (client) {
   client.SASL = new SASLFactory()
   client.authenticators.push(authenticator)
 }
+
+export default plugin

@@ -1,7 +1,7 @@
-'use strict'
+import mech from 'sasl-anonymous'
 
-const mech = require('sasl-anonymous')
-
-module.exports = function (client) {
+export function plugin (client) {
   client.SASL.use(mech)
 }
+
+export default plugin

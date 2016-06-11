@@ -50,6 +50,7 @@ client.on('nonza', () => {})
 
 client.connect({uri: 'xmpp:localhost', username: 'sonny', password: 'foobar'}, function (err) {
   if (err) return console.error(err)
+  console.log('foobar')
   console.log(client.jid.toString())
 })
 

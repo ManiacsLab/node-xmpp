@@ -1,7 +1,7 @@
-'use strict'
+import mech from 'sasl-x-oauth2'
 
-const mech = require('sasl-x-oauth2')
-
-module.exports = function (client) {
+export function plugin (client) {
   client.SASL.use(mech)
 }
+
+export default plugin

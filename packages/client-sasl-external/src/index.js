@@ -1,7 +1,7 @@
-'use strict'
+import mech from 'alt-sasl-external'
 
-const mech = require('sasl-external')
-
-module.exports = function (client) {
+export function plugin (client) {
   client.SASL.use(mech)
 }
+
+export default plugin

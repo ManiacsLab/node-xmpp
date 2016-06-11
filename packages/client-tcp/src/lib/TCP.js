@@ -1,20 +1,21 @@
 'use strict'
 
-const EventEmitter = require('events')
-const xml = require('@xmpp/xml')
-const net = require('net')
-const debug = require('debug')('xmpp:client:tcp')
-const StreamParser = require('./StreamParser')
-const url = require('url')
+import EventEmitter from 'events'
+import net from 'net'
+import StreamParser from './StreamParser'
+import url from 'url'
+import debug from 'debug'
 
-const NS_STREAM = 'http://etherx.jabber.org/streams'
-const NS_CLIENT = 'jabber:client'
+const d = debug('xmpp:client:tcp')
+
+export const NS_STREAM = 'http://etherx.jabber.org/streams'
+export const NS_CLIENT = 'jabber:client'
 
 /* References
  * Extensible Messaging and Presence Protocol (XMPP): Core http://xmpp.org/rfcs/rfc6120.html
 */
 
-class TCP extends EventEmitter {
+export default class TCP extends EventEmitter {
   constructor (options) {
     super()
 
@@ -50,13 +51,11 @@ class TCP extends EventEmitter {
   open (domain, cb) {
     // FIXME timeout
     this.parser.once('streamStart', attrs => {
-      const el = new xml.Element('stream:stream', attrs)
-      if (el.name !== 'stream:stream') return // FIXME error
-      if (el.attrs.version !== '1.0') return // FIXME error
-      if (el.attrs.xmlns !== NS_CLIENT) return // FIXME error
-      if (el.attrs['xmlns:stream'] !== NS_STREAM) return // FIXME error
-      if (el.attrs.from !== domain) return // FIXME error
-      if (!el.attrs.id) return // FIXME error
+      if (attrs.version !== '1.0') return // FIXME error
+      if (attrs.xmlns !== NS_CLIENT) return // FIXME error
+      if (attrs['xmlns:stream'] !== NS_STREAM) return // FIXME error
+      if (attrs.from !== domain) return // FIXME error
+      if (!attrs.id) return // FIXME error
 
       this.emit('open')
 
@@ -77,14 +76,11 @@ class TCP extends EventEmitter {
   restart (domain, cb) {
     // FIXME timeout
     this.parser.once('streamStart', attrs => {
-      const el = new xml.Element('stream:stream', attrs)
-      if (el.name !== 'stream:stream') return // FIXME error
-      if (el.attrs.version !== '1.0') return // FIXME error
-      if (el.attrs.xmlns !== NS_CLIENT) return // FIXME error
-      if (el.attrs['xmlns:stream'] !== NS_STREAM) return // FIXME error
-      // if (el.attrs.xmlns !== NS_FRAMING) return // FIXME error
-      if (el.attrs.from !== domain) return // FIXME error
-      if (!el.attrs.id) return // FIXME error
+      if (attrs.version !== '1.0') return // FIXME error
+      if (attrs.xmlns !== NS_CLIENT) return // FIXME error
+      if (attrs['xmlns:stream'] !== NS_STREAM) return // FIXME error
+      if (attrs.from !== domain) return // FIXME error
+      if (!attrs.id) return // FIXME error
 
       this.emit('open')
 
@@ -115,29 +111,25 @@ class TCP extends EventEmitter {
   }
 
   _connectListener () {
-    debug('opened')
     this.emit('connect')
   }
 
   _dataListener (data) {
-    debug('<-', data.toString('utf8'))
-
+    d('<-', data.toString('utf8'))
     this.parser.write(data.toString('utf8'))
   }
 
   _closeListener () {
-    debug('closed')
     this.emit('close')
   }
 
   _errorListener (error) {
-    debug('errored')
     this.emit('error', error)
   }
 
   write (data) {
+    d('->', data.toString('utf8'))
     data = data.trim()
-    debug('->', data)
     this.socket.write(data, 'utf8')
   }
 
@@ -150,7 +142,3 @@ class TCP extends EventEmitter {
     return uri.startsWith('xmpp:') ? uri : false
   }
 }
-
-TCP.NS_STREAM = NS_STREAM
-
-module.exports = TCP

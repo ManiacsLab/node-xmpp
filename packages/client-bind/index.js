@@ -73,3 +73,5 @@ function clientBind() {
 function plugin(client) {
   client.bind = clientBind;
 }
+
+exports.default = plugin;
