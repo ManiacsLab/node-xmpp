@@ -1,23 +1,23 @@
 'use strict'
 
-function request (stanza, options, cb = () => {}) {
+export function request (client, stanza, options, cb = () => {}) {
   if (typeof options === 'function') {
     cb = options
     options = {}
   }
 
   stanza = stanza.root()
-  if (!stanza.attrs.id) stanza.attrs.id = this.id()
+  if (!stanza.attrs.id) stanza.attrs.id = client.id()
 
   // TODO
-  if (options.next === true) this._iqNext = true
+  if (options.next === true) client._iqNext = true
 
-  this._iqHandlers[stanza.attrs.id] = cb
+  client._iqHandlers[stanza.attrs.id] = cb
 
-  this.send(stanza)
+  client.send(stanza)
 }
 
-function onStanza (stanza) {
+export function stanzaHandler (stanza) {
   const id = stanza.attrs.id
   if (
     !stanza.is('iq') ||
@@ -37,8 +37,12 @@ function onStanza (stanza) {
   delete this._iqHandlers[id]
 }
 
-module.exports = function (client) {
+export function clientRequest (...args) {
+  request(this, ...args)
+}
+
+export function plugin (client) {
   client._iqHandlers = Object.create(null)
-  client.on('stanza', onStanza.bind(client))
-  client.request = request
+  client.on('stanza', stanzaHandler.bind(client))
+  client.request = clientRequest
 }

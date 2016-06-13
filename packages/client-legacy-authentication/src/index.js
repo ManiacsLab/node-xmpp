@@ -1,16 +1,12 @@
-'use strict'
-
 /*
  * XEP-0078: Non-SASL Authentication
  * https://xmpp.org/extensions/xep-0078.html
  */
 
-const JID = require('@xmpp/jid')
-const xml = require('@xmpp/xml')
-const debug = require('debug')('xmpp:client:legacy-authentication')
+import JID from '@xmpp/jid'
 
-const NS = 'http://jabber.org/features/iq-auth'
-const NS_AUTH = 'jabber:iq:auth'
+export const NS = 'http://jabber.org/features/iq-auth'
+export const NS_AUTH = 'jabber:iq:auth'
 
 function bind (resource, cb) {
   if (typeof resource === 'function') {
@@ -22,22 +18,13 @@ function bind (resource, cb) {
   setTimeout(() => {
     const jid = this._legacy_authentication_jid
     delete this._legacy_authentication_jid
-    this.jid = jid
+    this.jid = jid // TODO probably not here...
     cb(null, jid)
   })
 }
 
-function authenticate (client, credentials, features, cb) {
+export function authenticate (client, credentials, features, cb) {
   const resource = credentials.resource || client.id()
-
-  if (debug.enabled) {
-    const creds = {}
-    const {password} = credentials
-    Object.assign(creds, credentials, {resource})
-    creds.password = '******'
-    debug('using credentials ', creds)
-    creds.password = password
-  }
 
   // In XEP-0078, authentication and binding are parts of the same operation
   // so we assign a dumb function that'll simply callback
@@ -46,25 +33,25 @@ function authenticate (client, credentials, features, cb) {
   const jid = new JID(credentials.username, client.domain, resource)
   client._legacy_authentication_jid = jid
 
-  const iq = xml`
+  const stanza = (
     <iq type='set'>
-      <query xmlns='${NS_AUTH}'>
-        <username>${jid.local}</username>
-        <password>${credentials.password}</password>
-        <resource>${jid.resource}</resource>
+      <query xmlns={NS_AUTH}>
+        <username>{jid.local}</username>
+        <password>{credentials.password}</password>
+        <resource>{jid.resource}</resource>
       </query>
     </iq>
-  `
+  )
 
-  return client.request(iq, {next: true}, cb)
+  return client.request(stanza, {next: true}, cb)
 }
 
-function match (features) {
+export function match (features) {
   return !!features.getChild('auth', NS)
 }
 
-const authenticator = {authenticate, match, name: 'legacy'}
+export const authenticator = {authenticate, match, name: 'legacy'}
 
-module.exports = function (client) {
+export function plugin (client) {
   client.authenticators.push(authenticator)
 }
