@@ -55,3 +55,5 @@ export const authenticator = {authenticate, match, name: 'legacy'}
 export function plugin (client) {
   client.authenticators.push(authenticator)
 }
+
+export default plugin

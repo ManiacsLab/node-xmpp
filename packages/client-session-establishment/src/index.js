@@ -1,5 +1,3 @@
-'use strict'
-
 /*
  *  Here Lies Extensible Messaging and Presence Protocol (XMPP) Session
                              Establishment
@@ -7,18 +5,25 @@
  *  https://tools.ietf.org/html/draft-cridland-xmpp-session-01
  */
 
-const ltx = require('ltx')
+export const name = 'session-establisment'
 
-const NS = 'urn:ietf:params:xml:ns:xmpp-session'
+export const NS = 'urn:ietf:params:xml:ns:xmpp-session'
 
-function establishSession (cb) {
-  return this.request(ltx`
+export function establishSession (client, cb) {
+  const stanza = (
     <iq type='set'>
-     <session xmlns='${NS}'/>
-   </iq>
-  `, cb)
+      <session xmlns={NS} />
+    </iq>
+  )
+  return client.request(stanza, cb)
 }
 
-module.exports = (client) => {
-  client.establishSession = establishSession
+export function clientEstablishSession (...args) {
+  establishSession(this, ...args)
 }
+
+export function plugin (client) {
+  client.establishSession = clientEstablishSession
+}
+
+export default plugin

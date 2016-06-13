@@ -46,3 +46,5 @@ export function plugin (client) {
   client.on('stanza', stanzaHandler.bind(client))
   client.request = clientRequest
 }
+
+export default plugin
