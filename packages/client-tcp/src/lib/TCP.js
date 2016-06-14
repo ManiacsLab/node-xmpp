@@ -23,91 +23,91 @@ export default class TCP extends EventEmitter {
     parser.on('element', (el) => this.emit('element', el))
   }
 
-  connect (uri, cb) {
-    const sock = this.socket = new net.Socket()
-    // FIXME remove listeners when closed/errored
-    sock.once('connect', this._connectListener.bind(this))
-    sock.on('data', this._dataListener.bind(this))
-    sock.once('close', this._closeListener.bind(this))
-    sock.once('error', this._errorListener.bind(this))
+  connect (uri) {
+    return new Promise((resolve, reject) => {
+      const sock = this.socket = new net.Socket()
+      // FIXME remove listeners when closed/errored
+      sock.once('connect', this._connectListener.bind(this))
+      sock.on('data', this._dataListener.bind(this))
+      sock.once('close', this._closeListener.bind(this))
+      sock.once('error', this._errorListener.bind(this))
 
-    const {hostname, port} = url.parse(uri)
+      const {hostname, port} = url.parse(uri)
 
-    sock.connect({port: port || 5222, hostname}, cb)
-    // if (cb) {
-    //   const onConnect = () => {
-    //     cb()
-    //     sock.removeListener('error', onError)
-    //   }
-    //   const onError = (err) => {
-    //     cb(err)
-    //     sock.removeListener('connect', onConnect)
-    //   }
-    //   this.once('connect', onConnect)
-    //   this.once('error', onError)
-    // }
-  }
-
-  open (domain, cb) {
-    // FIXME timeout
-    this.parser.once('streamStart', attrs => {
-      if (attrs.version !== '1.0') return // FIXME error
-      if (attrs.xmlns !== NS_CLIENT) return // FIXME error
-      if (attrs['xmlns:stream'] !== NS_STREAM) return // FIXME error
-      if (attrs.from !== domain) return // FIXME error
-      if (!attrs.id) return // FIXME error
-
-      this.emit('open')
-
-      // FIXME timeout
-      this.once('element', el => {
-        if (el.name !== 'stream:features') return // FIXME error
-
-        cb(null, el)
-        this.emit('stream:features', el)
+      sock.connect({port: port || 5222, hostname}, (err) => {
+        if (err) reject(err)
+        else resolve()
       })
     })
-    this.write(`
-      <?xml version='1.0'?>
-      <stream:stream to='localhost' version='1.0' xml:lang='en' xmlns='${NS_CLIENT}' xmlns:stream='${NS_STREAM}'>
-    `)
   }
 
-  restart (domain, cb) {
-    // FIXME timeout
-    this.parser.once('streamStart', attrs => {
-      if (attrs.version !== '1.0') return // FIXME error
-      if (attrs.xmlns !== NS_CLIENT) return // FIXME error
-      if (attrs['xmlns:stream'] !== NS_STREAM) return // FIXME error
-      if (attrs.from !== domain) return // FIXME error
-      if (!attrs.id) return // FIXME error
-
-      this.emit('open')
-
+  open (domain) {
+    return new Promise((resolve, reject) => {
       // FIXME timeout
-      this.once('element', el => {
-        if (el.name !== 'stream:features') return // FIXME error
+      this.parser.once('streamStart', attrs => {
+        if (attrs.version !== '1.0') return // FIXME error
+        if (attrs.xmlns !== NS_CLIENT) return // FIXME error
+        if (attrs['xmlns:stream'] !== NS_STREAM) return // FIXME error
+        if (attrs.from !== domain) return // FIXME error
+        if (!attrs.id) return // FIXME error
 
-        cb(null, el)
-        this.emit('stream:features', el)
+        this._domain = domain
+        this.emit('open')
+
+        // FIXME timeout
+        this.once('element', el => {
+          if (el.name !== 'stream:features') return // FIXME error
+
+          this.emit('features', el)
+          resolve(el)
+        })
       })
+      this.write(`
+        <?xml version='1.0'?>
+        <stream:stream to='localhost' version='1.0' xml:lang='en' xmlns='${NS_CLIENT}' xmlns:stream='${NS_STREAM}'>
+      `)
     })
-    this.write(`
-      <?xml version='1.0'?>
-      <stream:stream to='localhost' version='1.0' xml:lang='en' xmlns='${NS_CLIENT}' xmlns:stream='${NS_STREAM}'>
-    `)
+  }
+
+  restart (domain) {
+    return new Promise((resolve, reject) => {
+      // FIXME timeout
+      this.parser.once('streamStart', attrs => {
+        if (attrs.version !== '1.0') return // FIXME error
+        if (attrs.xmlns !== NS_CLIENT) return // FIXME error
+        if (attrs['xmlns:stream'] !== NS_STREAM) return // FIXME error
+        if (attrs.from !== domain) return // FIXME error
+        if (!attrs.id) return // FIXME error
+
+        this.emit('open')
+
+        // FIXME timeout
+        this.once('element', el => {
+          if (el.name !== 'stream:features') return // FIXME error
+
+          this.emit('features', el)
+
+          resolve(el)
+        })
+      })
+      this.write(`
+        <?xml version='1.0'?>
+        <stream:stream to='localhost' version='1.0' xml:lang='en' xmlns='${NS_CLIENT}' xmlns:stream='${NS_STREAM}'>
+      `)
+    })
   }
 
   // https://xmpp.org/rfcs/rfc6120.html#streams-close
-  close (cb) {
-    // TODO timeout
-    const handler = () => {
-      this.socket.close()
-      this.parser.removeListener('end', handler)
-      if (cb) this.once('close', cb)
-    }
-    this.parser.on('end', handler)
-    this.write('</stream:stream>')
+  close () {
+    return new Promise((resolve, reject) => {
+      // TODO timeout
+      const handler = () => {
+        this.socket.close()
+        this.once('close', resolve)
+      }
+      this.parser.once('end', handler)
+      this.write('</stream:stream>')
+    })
   }
 
   _connectListener () {
@@ -128,14 +128,15 @@ export default class TCP extends EventEmitter {
   }
 
   write (data) {
-    d('->', data.toString('utf8'))
-    data = data.trim()
-    this.socket.write(data, 'utf8')
+    data = data.toString('utf8').trim()
+    d('->', data)
+    return new Promise((resolve, reject) => {
+      this.socket.write(data, 'utf8', resolve)
+    })
   }
 
-  send (data) {
-    data = data.root().toString()
-    this.write(data)
+  send (element) {
+    return this.write(element.root())
   }
 
   static match (uri) {

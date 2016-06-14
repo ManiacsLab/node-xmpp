@@ -16,7 +16,7 @@ import bosh from '@xmpp/client-bosh'
 import tcp from '@xmpp/client-tcp'
 import http from '@xmpp/client-http'
 import alternative_connection_methods_http from '@xmpp/client-alternative-connection-methods-http'
-import session_establisment from '@xmpp/client-session-establishment'
+// import session_establisment from '@xmpp/client-session-establishment'
 
 export default [
   authentication,
@@ -34,8 +34,8 @@ export default [
   bosh,
   tcp,
   http,
-  alternative_connection_methods_http,
-  session_establisment
+  alternative_connection_methods_http
+  // session_establisment
 // TODO
 // require('@xmpp/client-reconnect')
 // require('@xmpp/client-alternative-connection-methods-srv')

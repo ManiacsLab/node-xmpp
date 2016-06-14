@@ -21,7 +21,14 @@ export default class Client extends EventEmitter {
     return Math.random().toString().split('0.')[1]
   }
 
-  connect (uri, cb = () => {}) {
+  // TODO is this useful?
+  promise (event) {
+    return new Promise((resolve, reject) => {
+      this.once(event, resolve)
+    })
+  }
+
+  connect (uri) {
     let params
     const Transport = this.transports.find(Transport => {
       return params = Transport.match(uri) // eslint-disable-line no-return-assign
@@ -37,46 +44,38 @@ export default class Client extends EventEmitter {
     transport.on('element', (element) => this._onelement(element))
     transport.on('close', (element) => this._onclose())
 
-    transport.connect(params, (err, ...args) => {
-      if (err) return cb(err)
-      this.uri = uri
-      cb()
-    })
+    return transport
+      .connect(params)
+      .then(() => { this.uri = uri })
   }
 
-  open (params = {}, cb = () => {}) {
+  open (params = {}) {
     if (typeof params === 'string') {
       params = {domain: params}
-    } else if (typeof params === 'function') {
-      cb = params
-      params = {}
     }
 
     const domain = params.domain || parse(this.uri).hostname
 
-    this.transport.open(domain, (err, features) => {
-      if (err) return cb(err)
-      this._domain = domain
-      this.features = features
-      this.emit('open', features)
-      cb(null, features)
-    })
+    return this.transport
+      .open(domain)
+      .then(features => {
+        this._domain = domain
+        this.features = features
+        this.emit('open', features)
+      })
   }
 
-  close (cb) {
-    this.transport.close(cb)
+  close () {
+    return this.transport.close()
   }
 
   _onclose () {
     delete this._domain
   }
 
-  _restart (cb) {
-    this.transport.restart(this._domain, (err, features) => {
-      if (err) return cb(err)
-      this.features = features
-      cb()
-    })
+  _restart (domain = this._domain) {
+    return this.transport
+      .restart(domain)
   }
 
   _onelement (element) {

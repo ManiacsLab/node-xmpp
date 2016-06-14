@@ -1,13 +1,8 @@
 {
-  "name": "@xmpp/client-bind",
+  "name": "@xmpp/client-stream-features",
   "repository": "github:node-xmpp/node-xmpp",
   "homepage": "http://github.com/node-xmpp/node-xmpp",
   "bugs": "http://github.com/node-xmpp/node-xmpp/issues",
   "version": "0.0.0",
-  "license": "ISC",
-  "dependencies": {
-    "@xmpp/client-iq-caller": "^0.0.0",
-    "@xmpp/jid": "^0.0.0",
-    "@xmpp/xml": "^0.0.0"
-  }
+  "license": "ISC"
 }

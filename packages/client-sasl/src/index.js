@@ -23,13 +23,9 @@ export function getBestMechanism (SASL, mechs, features) {
   return SASL.create(mechanisms)
 }
 
-export function authenticate (client, credentials, features, cb) {
+export function authenticate (client, credentials, features) {
   const mech = getBestMechanism(client.SASL, client.options.sasl, features)
-  if (!mech) {
-    // dezalgo...
-    setTimeout(() => { cb(new Error('no compatible mechanism')) })
-    return
-  }
+  if (!mech) return Promise.reject('no compatible mechanism')
 
   const {domain} = client.options
   const creds = {}
@@ -43,37 +39,45 @@ export function authenticate (client, credentials, features, cb) {
     serviceName: domain
   }, credentials)
 
-  const handler = (element) => {
-    if (element.attrs.xmlns !== NS) return
+  return new Promise((resolve, reject) => {
+    const handler = (element) => {
+      if (element.attrs.xmlns !== NS) return
 
-    if (element.name === 'challenge') {
-      mech.challenge(decode(element.text()))
-      const resp = mech.response(creds)
+      if (element.name === 'challenge') {
+        mech.challenge(decode(element.text()))
+        const resp = mech.response(creds)
+        client.send(
+          <response xmlns={NS} mechanism={mech.name}>
+            {typeof resp === 'string' ? encode(resp) : ''}
+          </response>
+        )
+        return
+      }
+
+      if (element.name === 'failure') {
+        reject()
+      } else if (element.name === 'success') {
+        // resolve(client._restart())
+        client._restart().then(() => {
+          console.log(f)
+          console.log('restarted lol, resolving...')
+          resolve()
+          console.log(f)
+        })
+      }
+
+      client.removeListener('nonza', handler)
+    }
+    client.on('nonza', handler)
+
+    if (mech.clientFirst) {
       client.send(
-        <response xmlns={NS} mechanism={mech.name}>
-          {typeof resp === 'string' ? encode(resp) : ''}
-        </response>
+        <auth xmlns={NS} mechanism={mech.name}>
+          {encode(mech.response(creds))}
+        </auth>
       )
-      return
     }
-
-    if (element.name === 'failure') {
-      cb(true)
-    } else if (element.name === 'success') {
-      client._restart(cb)
-    }
-
-    client.removeListener('nonza', handler)
-  }
-  client.on('nonza', handler)
-
-  if (mech.clientFirst) {
-    client.send(
-      <auth xmlns={NS} mechanism={mech.name}>
-        {encode(mech.response(creds))}
-      </auth>
-    )
-  }
+  })
 }
 
 export function match (features) {

@@ -1,20 +1,17 @@
 'use strict'
 
-export function request (client, stanza, options, cb = () => {}) {
-  if (typeof options === 'function') {
-    cb = options
-    options = {}
-  }
+export function request (client, stanza, options = {}) {
+  return new Promise((resolve, reject) => {
+    stanza = stanza.root()
+    if (!stanza.attrs.id) stanza.attrs.id = client.id()
 
-  stanza = stanza.root()
-  if (!stanza.attrs.id) stanza.attrs.id = client.id()
+    // TODO
+    if (options.next === true) client._iqNext = true
 
-  // TODO
-  if (options.next === true) client._iqNext = true
+    client._iqHandlers[stanza.attrs.id] = [resolve, reject]
 
-  client._iqHandlers[stanza.attrs.id] = cb
-
-  client.send(stanza)
+    client.send(stanza)
+  })
 }
 
 export function stanzaHandler (stanza) {
@@ -29,22 +26,17 @@ export function stanzaHandler (stanza) {
   if (!handler) return
 
   if (stanza.attrs.type === 'error') {
-    handler(stanza.getChild('error'))
+    handler[1](stanza.getChild('error'))
   } else {
-    handler(null, stanza.children[0])
+    handler[0](stanza.children[0])
   }
 
   delete this._iqHandlers[id]
 }
 
-export function clientRequest (...args) {
-  request(this, ...args)
-}
-
 export function plugin (client) {
   client._iqHandlers = Object.create(null)
   client.on('stanza', stanzaHandler.bind(client))
-  client.request = clientRequest
 }
 
 export default plugin

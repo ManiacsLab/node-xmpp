@@ -1,6 +1,9 @@
 import Connection from '@xmpp/client-connection'
 import plugins from './plugins'
 
+import {bind} from '@xmpp/client-bind'
+import {authenticate} from '@xmpp/client-authentication'
+
 export default class Client extends Connection {
   constructor () {
     super()
@@ -14,7 +17,7 @@ export default class Client extends Connection {
   }
 
   // TODO move to a plugin ?
-  connect (options, cb = () => {}) {
+  connect (options) {
     let params = {}
     if (typeof options === 'string') {
       params.uri = options
@@ -25,18 +28,20 @@ export default class Client extends Connection {
     // TODO promise, SRV
     // this.getAltnernativeConnectionsMethods('localhost', (err, methods) => {
       // console.log(err || methods)
-    super.connect(params.uri, (err) => {
-      if (err) return cb(err)
-      this.open(params.domain, (err) => {
-        if (err) return cb(err)
-        this.authenticate(params, (err) => {
-          if (err) return cb(err)
-          this.bind(params.resource, (err) => {
-            if (err) return cb(err)
-            cb()
-          })
-        })
-      })
+    return super.connect(params.uri)
+    .then(() => this.open(params.domain))
+    .then(() => authenticate(this, params))
+    .then(() => {
+      console.log('authenticated')
+    })
+    .then(() => {
+      bind(this, params.resource)
+    })
+    .then(jid => {
+      console.log(jid.toString())
+    })
+    .catch(err => {
+      console.log(err)
     })
 
     // return super

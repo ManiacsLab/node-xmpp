@@ -14,86 +14,93 @@ export const NS_STREAM = 'http://etherx.jabber.org/streams'
 */
 
 class WebSocket extends EventEmitter {
-  connect (url, cb) {
-    const sock = this.socket = new WS(url, ['xmpp'])
-    // FIXME remove listeners when closed/errored
-    sock.addEventListener('open', this._openListener.bind(this))
-    sock.addEventListener('message', this._messageListener.bind(this))
-    sock.addEventListener('close', this._closeListener.bind(this))
-    sock.addEventListener('error', this._errorListener.bind(this))
+  connect (url) {
+    return new Promise((resolve, reject) => {
+      const sock = this.socket = new WS(url, ['xmpp'])
+      // FIXME remove listeners when closed/errored
+      sock.addEventListener('open', this._openListener.bind(this))
+      sock.addEventListener('message', this._messageListener.bind(this))
+      sock.addEventListener('close', this._closeListener.bind(this))
+      sock.addEventListener('error', this._errorListener.bind(this))
 
-    if (cb) {
-      const onConnect = () => {
-        cb()
-        sock.removeListener('error', onError)
+      const done = (err) => {
+        this.removeListener('error', done)
+        this.removeListener('open', done)
+        if (err) reject(err)
+        else resolve()
       }
-      const onError = (err) => {
-        cb(err)
-        sock.removeListener('connect', onConnect)
-      }
-      this.once('connect', onConnect)
-      this.once('error', onError)
-    }
+      // ws doesn't implement removeEventListener
+      this.once('open', done)
+      this.once('error', done)
+    })
   }
 
-  open (domain, cb) {
-    // FIXME timeout
-    this.once('element', el => {
-      if (el.name !== 'open') return // FIXME error
-      if (el.attrs.version !== '1.0') return // FIXME error
-      if (el.attrs.xmlns !== NS_FRAMING) return // FIXME error
-      if (el.attrs.from !== domain) return // FIXME error
-      if (!el.attrs.id) return // FIXME error
-
-      this.emit('open')
-
+  open (domain) {
+    return new Promise((resolve, reject) => {
       // FIXME timeout
       this.once('element', el => {
-        if (el.name !== 'stream:features') return // FIXME error
-        if (el.attrs['xmlns:stream'] !== NS_STREAM) return // FIXME error
-     // if (stanza.attrs.xmlns !== NS_CLIENT) FIXME what about this one?
+        if (el.name !== 'open') return // FIXME error
+        if (el.attrs.version !== '1.0') return // FIXME error
+        if (el.attrs.xmlns !== NS_FRAMING) return // FIXME error
+        if (el.attrs.from !== domain) return // FIXME error
+        if (!el.attrs.id) return // FIXME error
 
-        cb(null, el)
-        this.emit('stream:features', el)
+        this._domain = domain
+        this.emit('open')
+
+        // FIXME timeout
+        this.once('element', el => {
+          if (el.name !== 'stream:features') return // FIXME error
+          if (el.attrs['xmlns:stream'] !== NS_STREAM) return // FIXME error
+          // if (stanza.attrs.xmlns !== NS_CLIENT) FIXME what about this one?
+
+          this.emit('features', el)
+
+          resolve(el)
+        })
       })
+      this.send(<open version='1.0' xmlns={NS_FRAMING} to={domain} />)
     })
-    this.send(<open version='1.0' xmlns={NS_FRAMING} to={domain} />)
   }
 
-  restart (domain, cb) {
-    // FIXME timeout
-    this.once('element', el => {
-      if (el.name !== 'open') return // FIXME error
-      if (el.attrs.version !== '1.0') return // FIXME error
-      if (el.attrs.xmlns !== NS_FRAMING) return // FIXME error
-      if (el.attrs.from !== domain) return // FIXME error
-      if (!el.attrs.id) return // FIXME error
-
-      this.emit('open')
-
+  restart (domain) {
+    return new Promise((resolve, reject) => {
       // FIXME timeout
       this.once('element', el => {
-        if (el.name !== 'stream:features') return // FIXME error
-        if (el.attrs['xmlns:stream'] !== NS_STREAM) return // FIXME error
-     // if (stanza.attrs.xmlns !== NS_CLIENT) FIXME what about this one?
+        if (el.name !== 'open') return // FIXME error
+        if (el.attrs.version !== '1.0') return // FIXME error
+        if (el.attrs.xmlns !== NS_FRAMING) return // FIXME error
+        if (el.attrs.from !== domain) return // FIXME error
+        if (!el.attrs.id) return // FIXME error
 
-        cb(null, el)
+        this.emit('open')
+
+        // FIXME timeout
+        this.once('element', el => {
+          if (el.name !== 'stream:features') return // FIXME error
+          if (el.attrs['xmlns:stream'] !== NS_STREAM) return // FIXME error
+          // if (stanza.attrs.xmlns !== NS_CLIENT) FIXME what about this one?
+
+          resolve(el)
+        })
       })
+      this.send(<open version='1.0' xmlns={NS_FRAMING} to={domain} />)
     })
-    this.send(<open version='1.0' xmlns={NS_FRAMING} to={domain} />)
   }
 
   // https://tools.ietf.org/html/rfc7395#section-3.6
-  close (cb) {
-    // FIXME timeout
-    const handler = (element) => {
-      if (!element.is('close', NS_FRAMING)) return
-      this.socket.close()
-      this.removeListener('element', handler)
-      if (cb) this.once('close', cb) // FIXME timeout
-    }
-    this.on('element', handler)
-    this.send(<close xmlns={NS_FRAMING} />)
+  close () {
+    return new Promise((resolve, reject) => {
+      // FIXME timeout
+      const handler = (element) => {
+        if (!element.is('close', NS_FRAMING)) return
+        this.removeListener('element', handler)
+        this.socket.close()
+        this.once('close', resolve) // FIXME timeout
+      }
+      this.on('element', handler)
+      this.send(<close xmlns={NS_FRAMING} />)
+    })
   }
 
   _openListener () {

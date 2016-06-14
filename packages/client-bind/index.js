@@ -18,6 +18,8 @@ var _jid = require('@xmpp/jid');
 
 var _jid2 = _interopRequireDefault(_jid);
 
+var _clientIqCaller = require('@xmpp/client-iq-caller');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /*
@@ -47,17 +49,10 @@ function hasSupport(features) {
   return features.getChild('bind', NS);
 }
 
-function bind(client, resource, cb) {
-  if (typeof resource === 'function') {
-    cb = resource;
-    resource = '';
-  }
-
-  return client.request(stanza(resource), { next: true }, function (err, res) {
-    if (err) return cb(err);
-    var jid = new _jid2.default(res.getChild('jid').text());
+function bind(client, resource) {
+  (0, _clientIqCaller.request)(client, stanza(resource), { next: true }).then(function (result) {
+    var jid = new _jid2.default(result.getChild('jid').text());
     client.jid = jid;
-    cb(null, jid);
     client.emit('online');
   });
 }

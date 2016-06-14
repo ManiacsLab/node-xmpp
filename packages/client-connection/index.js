@@ -50,12 +50,22 @@ var Client = function (_EventEmitter) {
     value: function id() {
       return Math.random().toString().split('0.')[1];
     }
+
+    // TODO is this useful?
+
+  }, {
+    key: 'promise',
+    value: function promise(event) {
+      var _this2 = this;
+
+      return new Promise(function (resolve, reject) {
+        _this2.once(event, resolve);
+      });
+    }
   }, {
     key: 'connect',
     value: function connect(uri) {
-      var _this2 = this;
-
-      var cb = arguments.length <= 1 || arguments[1] === undefined ? function () {} : arguments[1];
+      var _this3 = this;
 
       var params = void 0;
       var Transport = this.transports.find(function (Transport) {
@@ -71,51 +81,43 @@ var Client = function (_EventEmitter) {
             args[_key] = arguments[_key];
           }
 
-          return _this2.emit.apply(_this2, [e].concat(args));
+          return _this3.emit.apply(_this3, [e].concat(args));
         });
       });
       transport.on('element', function (element) {
-        return _this2._onelement(element);
+        return _this3._onelement(element);
       });
       transport.on('close', function (element) {
-        return _this2._onclose();
+        return _this3._onclose();
       });
 
-      transport.connect(params, function (err) {
-        if (err) return cb(err);
-        _this2.uri = uri;
-        cb();
+      return transport.connect(params).then(function () {
+        _this3.uri = uri;
       });
     }
   }, {
     key: 'open',
     value: function open() {
-      var _this3 = this;
+      var _this4 = this;
 
       var params = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-      var cb = arguments.length <= 1 || arguments[1] === undefined ? function () {} : arguments[1];
 
       if (typeof params === 'string') {
         params = { domain: params };
-      } else if (typeof params === 'function') {
-        cb = params;
-        params = {};
       }
 
       var domain = params.domain || (0, _url.parse)(this.uri).hostname;
 
-      this.transport.open(domain, function (err, features) {
-        if (err) return cb(err);
-        _this3._domain = domain;
-        _this3.features = features;
-        _this3.emit('open', features);
-        cb(null, features);
+      return this.transport.open(domain).then(function (features) {
+        _this4._domain = domain;
+        _this4.features = features;
+        _this4.emit('open', features);
       });
     }
   }, {
     key: 'close',
-    value: function close(cb) {
-      this.transport.close(cb);
+    value: function close() {
+      return this.transport.close();
     }
   }, {
     key: '_onclose',
@@ -124,14 +126,10 @@ var Client = function (_EventEmitter) {
     }
   }, {
     key: '_restart',
-    value: function _restart(cb) {
-      var _this4 = this;
+    value: function _restart() {
+      var domain = arguments.length <= 0 || arguments[0] === undefined ? this._domain : arguments[0];
 
-      this.transport.restart(this._domain, function (err, features) {
-        if (err) return cb(err);
-        _this4.features = features;
-        cb();
-      });
+      return this.transport.restart(domain);
     }
   }, {
     key: '_onelement',

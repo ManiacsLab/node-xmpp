@@ -1,22 +1,18 @@
-export function authenticate (client, creds, cb) {
+export function authenticate (client, creds) {
   const auth = client.authenticators.find(auth => auth.match(client.features))
 
-  if (!auth) {
-    // dezalgo... TODO use process.nextTick/setImmediate/Promise.resolve/... when available
-    setTimeout(() => { cb(new Error('no compatible authentication')) })
-    return
-  }
+  if (!auth) return Promise.reject(new Error('no compatible authentication'))
 
-  auth.authenticate(client, creds, client.features, cb)
-}
-
-export function clientAuthenticate (...args) {
-  authenticate(this, ...args)
+  return new Promise((resolve, reject) => {
+    auth.authenticate(client, creds, client.features, (err, ...args) => {
+      if (err) reject(err)
+      else resolve(...args)
+    })
+  })
 }
 
 export function plugin (client) {
   client.authenticators = []
-  client.authenticate = clientAuthenticate
 }
 
 export default plugin
