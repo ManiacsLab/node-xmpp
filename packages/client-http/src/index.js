@@ -1,8 +1,8 @@
-'use strict'
+import nodeFetch from 'node-fetch'
 
-const fetch = global.fetch || require('node-fetch')
+const fetch = global.fetch || nodeFetch
 
-function http (url, options, cb = () => {}) {
+export function http (url, options, cb = () => {}) {
   if (typeof options === 'function') {
     cb = options
   }
@@ -12,6 +12,4 @@ function http (url, options, cb = () => {}) {
     .catch(cb)
 }
 
-module.exports = function (client) {
-  client.http = http
-}
+export default http

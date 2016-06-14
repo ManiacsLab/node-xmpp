@@ -1,9 +1,8 @@
 'use strict'
 
 const http = require('http')
-const xml = require('@xmpp/xml')
 
-const doc = xml`
+const doc = `
 <?xml version='1.0' encoding=utf-8'?>
 <XRD xmlns='http://docs.oasis-open.org/ns/xri/xrd-1.0'>
   <Link rel="urn:xmpp:alt-connections:xbosh"
@@ -17,7 +16,7 @@ var server = http.createServer()
 server.on('request', (req, res) => {
   if (req.url === '/.well-known/host-meta') {
     res.writeHead(200)
-    res.end(doc.toString(), 'utf8')
+    res.end(doc, 'utf8')
   }
 })
 

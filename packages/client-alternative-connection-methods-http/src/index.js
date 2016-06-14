@@ -9,14 +9,15 @@
  */
 
 import parse from '@xmpp/xml'
+import http from '@xmpp/client-http'
 
 export const NS_XRD = 'http://docs.oasis-open.org/ns/xri/xrd-1.0'
 export const REL_BOSH = 'urn:xmpp:alt-connections:xbosh'
 export const REL_WS = 'urn:xmpp:alt-connections:websocket'
 export const HOST_META = '/.well-known/host-meta'
 
-export function getAltnernativeConnectionsMethods (domain, cb) {
-  this.http('http://' + domain + HOST_META, {
+export function getAltnernativeConnectionsMethods (domain, secure, cb) {
+  http(`http${secure ? 's' : ''}://${domain}${HOST_META}`, {
     headers: {
       accept: 'application/xrd+xml'
     }
@@ -49,8 +50,4 @@ export function getAltnernativeConnectionsMethods (domain, cb) {
   })
 }
 
-export function plugin (client) {
-  client.getAltnernativeConnectionsMethods = getAltnernativeConnectionsMethods
-}
-
-export default plugin
+export default getAltnernativeConnectionsMethods

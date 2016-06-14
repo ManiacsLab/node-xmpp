@@ -1,5 +1,5 @@
-import ltx from 'ltx'
+import ltx, {Element, parse} from 'ltx'
 
-export const {parse, Element} = ltx
+export {Element, parse}
 
 export default ltx

@@ -5,30 +5,34 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.HOST_META = exports.REL_WS = exports.REL_BOSH = exports.NS_XRD = undefined;
 exports.getAltnernativeConnectionsMethods = getAltnernativeConnectionsMethods;
-exports.plugin = plugin;
 
 var _xml = require('@xmpp/xml');
 
 var _xml2 = _interopRequireDefault(_xml);
 
+var _clientHttp = require('@xmpp/client-http');
+
+var _clientHttp2 = _interopRequireDefault(_clientHttp);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var NS_XRD = exports.NS_XRD = 'http://docs.oasis-open.org/ns/xri/xrd-1.0'; /*
-                                                                            * References
-                                                                            * XEP-0156: Discovering Alternative XMPP Connection Methods
-                                                                            *   https://xmpp.org/extensions/xep-0156.html
-                                                                            * RFC 6415: Web Host Metadata
-                                                                            *   https://tools.ietf.org/html/rfc6415
-                                                                            *
-                                                                            * https://github.com/xsf/xeps/pull/198
-                                                                            */
+/*
+ * References
+ * XEP-0156: Discovering Alternative XMPP Connection Methods
+ *   https://xmpp.org/extensions/xep-0156.html
+ * RFC 6415: Web Host Metadata
+ *   https://tools.ietf.org/html/rfc6415
+ *
+ * https://github.com/xsf/xeps/pull/198
+ */
 
+var NS_XRD = exports.NS_XRD = 'http://docs.oasis-open.org/ns/xri/xrd-1.0';
 var REL_BOSH = exports.REL_BOSH = 'urn:xmpp:alt-connections:xbosh';
 var REL_WS = exports.REL_WS = 'urn:xmpp:alt-connections:websocket';
 var HOST_META = exports.HOST_META = '/.well-known/host-meta';
 
-function getAltnernativeConnectionsMethods(domain, cb) {
-  this.http('http://' + domain + HOST_META, {
+function getAltnernativeConnectionsMethods(domain, secure, cb) {
+  (0, _clientHttp2.default)('http' + (secure ? 's' : '') + '://' + domain + HOST_META, {
     headers: {
       accept: 'application/xrd+xml'
     }
@@ -63,8 +67,4 @@ function getAltnernativeConnectionsMethods(domain, cb) {
   });
 }
 
-function plugin(client) {
-  client.getAltnernativeConnectionsMethods = getAltnernativeConnectionsMethods;
-}
-
-exports.default = plugin;
+exports.default = getAltnernativeConnectionsMethods;
