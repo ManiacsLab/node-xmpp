@@ -50,10 +50,11 @@ function hasSupport(features) {
 }
 
 function bind(client, resource) {
-  (0, _clientIqCaller.request)(client, stanza(resource), { next: true }).then(function (result) {
+  return (0, _clientIqCaller.request)(client, stanza(resource), { next: true }).then(function (result) {
     var jid = new _jid2.default(result.getChild('jid').text());
     client.jid = jid;
     client.emit('online');
+    return jid;
   });
 }
 

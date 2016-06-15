@@ -8,7 +8,7 @@ test('resolve', t => {
   t.is(ee.listenerCount('connect'), 1)
   t.is(ee.listenerCount('error'), 1)
   ee.emit('connect', 'foo')
-  return p.then(value => {
+  return p.then(value => { // eslint-disable-line promise/always-return
     t.is(value, 'foo')
     t.is(ee.listenerCount('connect'), 0)
     t.is(ee.listenerCount('error'), 0)

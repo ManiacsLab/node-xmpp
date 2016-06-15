@@ -3,12 +3,7 @@ export function authenticate (client, creds) {
 
   if (!auth) return Promise.reject(new Error('no compatible authentication'))
 
-  return new Promise((resolve, reject) => {
-    auth.authenticate(client, creds, client.features, (err, ...args) => {
-      if (err) reject(err)
-      else resolve(...args)
-    })
-  })
+  return auth.authenticate(client, creds, client.features)
 }
 
 export function plugin (client) {

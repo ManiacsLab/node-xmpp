@@ -65,6 +65,3 @@ export function promisify (fn, options) {
     })
   }
 }
-
-
-// promiseEvent(client, 'stanza').then()

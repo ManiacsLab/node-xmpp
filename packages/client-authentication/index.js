@@ -12,15 +12,7 @@ function authenticate(client, creds) {
 
   if (!auth) return Promise.reject(new Error('no compatible authentication'));
 
-  return new Promise(function (resolve, reject) {
-    auth.authenticate(client, creds, client.features, function (err) {
-      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
-      }
-
-      if (err) reject(err);else resolve.apply(undefined, args);
-    });
-  });
+  return auth.authenticate(client, creds, client.features);
 }
 
 function plugin(client) {

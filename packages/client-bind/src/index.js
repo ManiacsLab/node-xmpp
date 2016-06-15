@@ -26,11 +26,12 @@ export function hasSupport (features) {
 }
 
 export function bind (client, resource) {
-  request(client, stanza(resource), {next: true})
+  return request(client, stanza(resource), {next: true})
     .then(result => {
       const jid = new JID(result.getChild('jid').text())
       client.jid = jid
       client.emit('online')
+      return jid
     })
 }
 

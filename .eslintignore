@@ -1,2 +1,4 @@
 packages/client*/index.js
 packages/client*/lib/
+packages/*/node_modules/
+bundle.js

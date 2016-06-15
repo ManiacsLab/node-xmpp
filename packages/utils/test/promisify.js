@@ -6,7 +6,7 @@ test('resolve', t => {
     setTimeout(() => cb(null, value), time)
   }
   const promisified = promisify(delay)
-  return promisified(10, 'foo').then(value => {
+  return promisified(10, 'foo').then(value => { // eslint-disable-line promise/always-return
     t.is(value, 'foo')
   })
 })

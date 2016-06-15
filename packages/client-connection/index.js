@@ -93,6 +93,7 @@ var Client = function (_EventEmitter) {
 
       return transport.connect(params).then(function () {
         _this3.uri = uri;
+        return params;
       });
     }
   }, {
@@ -112,6 +113,7 @@ var Client = function (_EventEmitter) {
         _this4._domain = domain;
         _this4.features = features;
         _this4.emit('open', features);
+        return features;
       });
     }
   }, {

@@ -12,7 +12,7 @@ export default class Client extends Connection {
       // plugin = require('@xmpp/client-' + plugin)
       // // ignored by bundler
       // if (typeof plugin !== 'function' || Object.keys(plugin) === 0) return
-      this.use(plugin)
+      if (typeof plugin === 'function') this.use(plugin)
     })
   }
 
@@ -29,26 +29,12 @@ export default class Client extends Connection {
     // this.getAltnernativeConnectionsMethods('localhost', (err, methods) => {
       // console.log(err || methods)
     return super.connect(params.uri)
-    .then(() => this.open(params.domain))
-    .then(() => authenticate(this, params))
-    .then(() => {
-      console.log('authenticated')
-    })
-    .then(() => {
-      bind(this, params.resource)
-    })
-    .then(jid => {
-      console.log(jid.toString())
-    })
-    .catch(err => {
-      console.log(err)
-    })
-
-    // return super
-    //   .connect(params.uri)
-    //   .then(this.open(params.domain))
-    //   .then(this.authenticate(params))
-    //   .then(this.bind(params.resource))
-    // })
+      .then(() => this.open(params.domain))
+      .then(() => authenticate(this, params))
+      .then(() => bind(this, params.resource))
   }
 }
+
+process.on('unhandledRejection', function (reason, p) {
+  console.log('Possibly Unhandled Rejection at: Promise ', p, ' reason: ', reason)
+})

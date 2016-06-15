@@ -4,7 +4,7 @@ import {hasSupport, stanza, plugin} from './index'
 test('plugin', t => {
   const client = {}
   plugin(client)
-  t.truthy(typeof client.bind === 'function')
+  t.true(typeof client.bind === 'function')
 })
 
 test('hasSupport()', t => {

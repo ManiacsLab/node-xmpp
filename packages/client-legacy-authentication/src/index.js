@@ -8,26 +8,18 @@ import JID from '@xmpp/jid'
 export const NS = 'http://jabber.org/features/iq-auth'
 export const NS_AUTH = 'jabber:iq:auth'
 
-function bind (resource, cb) {
-  if (typeof resource === 'function') {
-    cb = resource
-  }
-
-  // dezalgo...
-  // FIXME promise?
-  setTimeout(() => {
-    const jid = this._legacy_authentication_jid
-    delete this._legacy_authentication_jid
-    this.jid = jid // TODO probably not here...
-    cb(null, jid)
-  })
+function bind () {
+  const jid = this._legacy_authentication_jid
+  delete this._legacy_authentication_jid
+  this.jid = jid // TODO probably not here...
+  return Promise.resolve(jid)
 }
 
-export function authenticate (client, credentials, features, cb) {
+export function authenticate (client, credentials, features) {
   const resource = credentials.resource || client.id()
 
   // In XEP-0078, authentication and binding are parts of the same operation
-  // so we assign a dumb function that'll simply callback
+  // so we assign a dumb function
   client.bind = bind
 
   const jid = new JID(credentials.username, client.domain, resource)
@@ -43,7 +35,7 @@ export function authenticate (client, credentials, features, cb) {
     </iq>
   )
 
-  return client.request(stanza, {next: true}, cb)
+  return client.request(stanza, {next: true})
 }
 
 export function match (features) {

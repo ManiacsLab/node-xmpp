@@ -57,13 +57,7 @@ export function authenticate (client, credentials, features) {
       if (element.name === 'failure') {
         reject()
       } else if (element.name === 'success') {
-        // resolve(client._restart())
-        client._restart().then(() => {
-          console.log(f)
-          console.log('restarted lol, resolving...')
-          resolve()
-          console.log(f)
-        })
+        resolve(client._restart())
       }
 
       client.removeListener('nonza', handler)

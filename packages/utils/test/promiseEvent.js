@@ -7,7 +7,7 @@ test('resolve', t => {
   const p = promiseEvent(ee, 'foo')
   t.is(ee.listenerCount('foo'), 1)
   ee.emit('foo', 'bar')
-  return p.then(value => {
+  return p.then(value => { // eslint-disable-line promise/always-return
     t.is(value, 'bar')
     t.is(ee.listenerCount('foo'), 0)
   })

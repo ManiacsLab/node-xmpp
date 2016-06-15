@@ -46,7 +46,10 @@ export default class Client extends EventEmitter {
 
     return transport
       .connect(params)
-      .then(() => { this.uri = uri })
+      .then(() => {
+        this.uri = uri
+        return params
+      })
   }
 
   open (params = {}) {
@@ -62,6 +65,7 @@ export default class Client extends EventEmitter {
         this._domain = domain
         this.features = features
         this.emit('open', features)
+        return features
       })
   }
 
@@ -74,8 +78,7 @@ export default class Client extends EventEmitter {
   }
 
   _restart (domain = this._domain) {
-    return this.transport
-      .restart(domain)
+    return this.transport.restart(domain)
   }
 
   _onelement (element) {
