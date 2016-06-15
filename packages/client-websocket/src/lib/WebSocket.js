@@ -30,7 +30,7 @@ class WebSocket extends EventEmitter {
         else resolve()
       }
       // ws doesn't implement removeEventListener
-      this.once('open', done)
+      this.once('connect', done)
       this.once('error', done)
     })
   }
