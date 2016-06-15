@@ -28,22 +28,27 @@
     "uglify-js": "^2.6.2"
   },
   "scripts": {
-    "ava": "ava packages/*/test.js",
+    "ava": "ava",
     "make": "lerna exec --scope '@xmpp/*' -- ../../node_modules/.bin/babel src/ -d .",
-    "newtest": "npm run lint && npm run make && npm run ava",
+    "newtest": "npm run make && npm run ava",
     "postinstall": "npm run bootstrap",
     "lint": "eslint .",
-    "unit": "mocha --recursive packages/*/test/ -t 5000",
+    "unit": "mocha --recursive packages/node-*/test/ -t 5000",
     "bootstrap": "lerna bootstrap",
     "bundle": "lerna run bundle",
     "integration": "mocha --recursive test/integration -t 5000",
-    "test": "npm run coverage && npm run lint && lerna run test && npm run newtest",
-    "coverage": "istanbul cover _mocha --report lcovonly -- -R spec --recursive packages/*/test/ -t 5000",
+    "test": "npm run coverage && npm run lint && npm run newtest",
+    "coverage": "istanbul cover _mocha --report lcovonly -- -R spec --recursive packages/node-*/test/ -t 5000",
     "coveralls": "cat ./coverage/lcov.info | coveralls && rm -rf ./coverage",
     "test:browser": "phantomjs ./node_modules/mocha-phantomjs-core/mocha-phantomjs-core.js http://localhost:8000/test/browser/ spec '{\"ignoreResourceErrors\": true}'"
   },
   "ava": {
     "require": "babel-register",
-    "babel": "inherit"
+    "babel": "inherit",
+    "files": [
+      "packages/*/test.js",
+      "packages/*/test/**/*.js",
+      "!packages/node-*/**/*.js"
+    ]
   }
 }
