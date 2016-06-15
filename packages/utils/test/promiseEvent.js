@@ -1,9 +1,8 @@
 import test from 'ava'
 import EventEmitter from 'events'
-import {promiseEvent} from './src'
-// import {promiseEvent} from './index'
+import {promiseEvent} from '../src'
 
-test('promiseEvent - resolve', t => {
+test('resolve', t => {
   const ee = new EventEmitter()
   const p = promiseEvent(ee, 'foo')
   t.is(ee.listenerCount('foo'), 1)
@@ -14,7 +13,7 @@ test('promiseEvent - resolve', t => {
   })
 })
 
-test('promiseEvent - timeout', t => {
+test('timeout', t => {
   const ee = new EventEmitter()
   const p = promiseEvent(ee, 'foo', {timeout: 500})
   t.is(ee.listenerCount('foo'), 1)
