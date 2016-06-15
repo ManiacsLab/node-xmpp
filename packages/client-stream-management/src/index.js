@@ -35,13 +35,13 @@ export function enable (client, resume, cb) {
       if (err) return // FIXME WAT?? - reconnect + backoff module?
       if (isSupported(features) && client.options.sm.id) {
         const id = client.options.sm.id
-        client.send(<enable xmlns={NS} resume='true' h='0' previd={id} />)
+        client.send(<enable xmlns={NS} resume='true' h='0' previd={id}/>)
       }
     })
     // })
   })
 
-  return client.send(<enable xmlns={NS} resume='true' />)
+  return client.send(<enable xmlns={NS} resume='true'/>)
 }
 
 export function clientEnable (client, ...args) {

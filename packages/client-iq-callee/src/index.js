@@ -18,7 +18,7 @@ export function handler (stanza) {
 
   let matched
 
-  const iq = <iq id={stanza.attrs.id} />
+  const iq = <iq id={stanza.attrs.id}/>
 
   this._iqMatchers.forEach((handler, match) => {
     const matching = match(stanza)

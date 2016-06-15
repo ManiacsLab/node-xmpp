@@ -59,7 +59,7 @@ class WebSocket extends EventEmitter {
           resolve(el)
         })
       })
-      this.send(<open version='1.0' xmlns={NS_FRAMING} to={domain} />)
+      this.send(<open version='1.0' xmlns={NS_FRAMING} to={domain}/>)
     })
   }
 
@@ -84,7 +84,7 @@ class WebSocket extends EventEmitter {
           resolve(el)
         })
       })
-      this.send(<open version='1.0' xmlns={NS_FRAMING} to={domain} />)
+      this.send(<open version='1.0' xmlns={NS_FRAMING} to={domain}/>)
     })
   }
 
@@ -99,7 +99,7 @@ class WebSocket extends EventEmitter {
         this.once('close', resolve) // FIXME timeout
       }
       this.on('element', handler)
-      this.send(<close xmlns={NS_FRAMING} />)
+      this.send(<close xmlns={NS_FRAMING}/>)
     })
   }
 

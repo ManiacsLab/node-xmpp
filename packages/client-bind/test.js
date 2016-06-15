@@ -1,5 +1,5 @@
 import test from 'ava'
-import {hasSupport, stanza, plugin} from './index'
+import {hasSupport, stanza, plugin} from './src'
 
 test('plugin', t => {
   const client = {}
@@ -8,10 +8,10 @@ test('plugin', t => {
 })
 
 test('hasSupport()', t => {
-  const features = <features />
+  const features = <features/>
   t.is(hasSupport(features), undefined)
 
-  const bind = <bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' />
+  const bind = <bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'/>
   features.cnode(bind)
   t.is(hasSupport(features), bind)
 })
@@ -19,7 +19,7 @@ test('hasSupport()', t => {
 test('stanza()', t => {
   t.deepEqual(stanza(), (
     <iq type='set'>
-      <bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' />
+      <bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'/>
     </iq>
   ))
 

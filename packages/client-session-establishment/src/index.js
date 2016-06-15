@@ -23,7 +23,7 @@ export function isOptional (el) {
 export function establishSession (client, cb) {
   const stanza = (
     <iq type='set'>
-      <session xmlns={NS} />
+      <session xmlns={NS}/>
     </iq>
   )
   return request(client, stanza, cb)

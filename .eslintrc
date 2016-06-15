@@ -16,3 +16,4 @@ rules:
   no-console: off # FIXME
   jsx-quotes: ['error', 'prefer-single']
   ava/no-ignored-test-files: off # FIXME
+  react/jsx-space-before-closing: [error, never]

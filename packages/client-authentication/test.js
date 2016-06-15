@@ -1,5 +1,5 @@
 import test from 'ava'
-import {authenticate, plugin} from './index'
+import {authenticate, plugin} from './src'
 
 test('plugin', t => {
   const client = {}
