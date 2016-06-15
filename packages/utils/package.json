@@ -1,5 +1,5 @@
 {
-  "name": "@xmpp/helpers",
+  "name": "@xmpp/utils",
   "repository": "github:node-xmpp/node-xmpp",
   "homepage": "http://github.com/node-xmpp/node-xmpp",
   "bugs": "http://github.com/node-xmpp/node-xmpp/issues",

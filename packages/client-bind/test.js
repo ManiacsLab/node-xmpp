@@ -26,7 +26,7 @@ test('stanza()', t => {
   t.deepEqual(stanza('foobar'), (
     <iq type='set'>
       <bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>
-        <resource>'foobar'</resource>
+        <resource>foobar</resource>
       </bind>
     </iq>
   ))
