@@ -2,6 +2,8 @@
 
 import EventEmitter from 'events'
 import {parse} from 'url' // FIXME not browser friendly
+import {promiseEvent} from '@xmpp/utils'
+import {match} from '@xmpp/xml'
 
 export const NS = 'jabber:client'
 
@@ -19,13 +21,6 @@ export default class Client extends EventEmitter {
 
   id () {
     return Math.random().toString().split('0.')[1]
-  }
-
-  // TODO is this useful?
-  promise (event) {
-    return new Promise((resolve, reject) => {
-      this.once(event, resolve)
-    })
   }
 
   connect (uri) {
@@ -109,5 +104,15 @@ export default class Client extends EventEmitter {
     if (this.plugins.includes(plugin)) return
     this.plugins.push(plugin)
     plugin(this)
+  }
+
+  promise (event) {
+    if (typeof event === 'string') return promiseEvent(this, event, options)
+
+    return promiseEvent(this, 'element', options)
+      .then(el => {
+        if (!match(el, event)) throw new Error('no match')
+        else return el
+      })
   }
 }
